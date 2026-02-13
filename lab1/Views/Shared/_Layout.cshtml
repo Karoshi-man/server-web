@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Online Journal</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lab1.styles.css" asp-append-version="true" />
+
+    <style>
+        /* ГЛОБАЛЬНИЙ СТИЛЬ ДЛЯ ВСЬОГО САЙТУ */
+        body {
+            background-color: #050505;
+            /* Твій крутий фон тепер тут, щоб був на всіх сторінках */
+            background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+            background-attachment: fixed;
+            color: #ffffff;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Щоб футер завжди був знизу */
+        }
+
+        /* HEADER - Мінімалістичний і прозорий */
+        .navbar {
+            background: rgba(0, 0, 0, 0.2) !important; /* Легка димка */
+            backdrop-filter: blur(10px); /* Розмиття фону під меню */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: #fff !important;
+            letter-spacing: 1px;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.7) !important;
+            transition: 0.3s;
+        }
+
+            .nav-link:hover {
+                color: #fff !important;
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* Ефект світіння при наведенні */
+            }
+
+        /* FOOTER - Просто і стильно */
+        .footer {
+            margin-top: auto; /* Притискає футер до низу */
+            padding: 20px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05); /* Ледь помітна лінія */
+            text-align: center;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+            .footer a {
+                color: rgba(255, 255, 255, 0.6);
+                text-decoration: none;
+                margin: 0 10px;
+                transition: 0.3s;
+            }
+
+                .footer a:hover {
+                    color: #00dfd8; /* Колір тіффані при наведенні */
+                }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-dark fixed-top">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">JOURNAL</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1 justify-content-end">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Головна</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Articles" asp-action="Index">Статті</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Authors" asp-action="Index">Автори</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container" style="margin-top: 80px;">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            &copy; 2026 - Online Journal - <span style="opacity: 0.5;">Designed by You</span>
+            <br />
+            <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <a href="#">GitHub</a>
+            <a href="#">About</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,145 @@
+﻿@{
+    ViewData["Title"] = "Головна";
+}
+
+<style>
+    /* 1. ГЛОБАЛЬНИЙ ТЕМНИЙ ФОН */
+    /* Перебиваємо білий фон Layout-у */
+    body {
+        background-color: #050505;
+        background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+        background-attachment: fixed; /* Щоб фон не рухався при скролі */
+        color: #ffffff;
+        min-height: 100vh;
+    }
+
+    /* 2. АНІМОВАНИЙ ТЕКСТ (SHIMMER EFFECT) */
+    .shimmer-text {
+        font-weight: 800;
+        /* Градієнт, який включає кілька кольорів: фіолетовий, синій, ціан, рожевий */
+        background: linear-gradient( to right, #7928CA 20%, #FF0080 30%, #00dfd8 70%, #7928CA 80% );
+        background-size: 200% auto;
+        color: #fff;
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        /* Сама анімація */
+        animation: shine 4s linear infinite;
+    }
+
+    @@keyframes shine {
+        to {
+            background-position: 200% center;
+        }   
+    }
+
+    /* 3. ТЕМНЕ СКЛО (DARK GLASS) */
+    .dark-glass {
+        background: rgba(20, 20, 20, 0.6); /* Темна підкладка */
+        backdrop-filter: blur(16px); /* Сильне розмиття фону */
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1); /* Ледь помітна рамка */
+        border-radius: 16px;
+        padding: 40px;
+        transition: all 0.4s ease;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    }
+
+        .dark-glass:hover {
+            background: rgba(40, 40, 40, 0.7);
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 25px rgba(121, 40, 202, 0.4); /* Неонове світіння при наведенні */
+        }
+
+    /* 4. НЕОНОВІ КНОПКИ */
+    .btn-neon {
+        background: transparent;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50px;
+        padding: 12px 35px;
+        font-weight: 600;
+        position: relative;
+        overflow: hidden;
+        transition: 0.3s;
+    }
+
+        .btn-neon:hover {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+    .btn-glow {
+        background: linear-gradient(90deg, #7928CA, #FF0080);
+        border: none;
+        color: white;
+        box-shadow: 0 0 15px rgba(121, 40, 202, 0.5);
+    }
+
+        .btn-glow:hover {
+            filter: brightness(1.2);
+            box-shadow: 0 0 30px rgba(255, 0, 128, 0.6);
+            color: white;
+        }
+
+    /* Іконки */
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        background: -webkit-linear-gradient(#00dfd8, #7928CA);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Текст опису */
+    .text-dim {
+        color: rgba(255, 255, 255, 0.7);
+    }
+</style>
+
+<div style="padding-top: 80px; padding-bottom: 80px;">
+    <div class="text-center mb-5">
+        <h1 class="display-1 mb-3 shimmer-text">Online Journal</h1>
+        <p class="lead mb-5 text-dim" style="font-size: 1.4rem; max-width: 700px; margin: 0 auto;">
+            Майбутнє твоїх ідей. Простір, де технології зустрічаються з творчістю.
+        </p>
+
+        <div class="d-flex justify-content-center gap-3">
+            <a asp-controller="Articles" asp-action="Index" class="btn btn-neon btn-glow btn-lg">
+                Читати статті
+            </a>
+            <a asp-controller="Articles" asp-action="Create" class="btn btn-neon btn-lg">
+                Створити допис
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-5">
+        <div class="col-md-4">
+            <div class="dark-glass h-100 text-center">
+                <div class="feature-icon">⚡</div>
+                <h3 class="text-white">Швидкість думки</h3>
+                <p class="text-dim">Блискавичний редактор, який не заважає потоку твоїх думок. Тільки ти і текст.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="dark-glass h-100 text-center">
+                <div class="feature-icon">🔗</div>
+                <h3 class="text-white">Синергія</h3>
+                <p class="text-dim">Об'єднуйте авторів, створюйте колаборації та будуйте нові зв'язки.</p>
+                <a asp-controller="Authors" asp-action="Index" class="btn btn-sm btn-link text-white-50 text-decoration-none mt-2">Автори &rarr;</a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="dark-glass h-100 text-center">
+                <div class="feature-icon">💎</div>
+                <h3 class="text-white">Якість</h3>
+                <p class="text-dim">Сучасна система рейтингу та відбору найкращого контенту для читачів.</p>
+            </div>
+        </div>
+    </div>
+</div>

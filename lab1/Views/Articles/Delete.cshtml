@@ -1,51 +1,185 @@
 ﻿@model lab1.Models.Article
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Видалити";
 }
 
-<h1>Delete</h1>
+<style>
+    /* DELETE CONTAINER */
+    .delete-wrapper {
+        max-width: 540px;
+        margin: 0 auto;
+        padding-top: 60px;
+        animation: shakeIn 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Article</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Content)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Content)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PublicationDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PublicationDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Rating)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Rating)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+    /* DANGER GLASS */
+    .glass-danger {
+        background: rgba(40, 10, 10, 0.6); /* Deep red tint */
+        backdrop-filter: blur(40px) saturate(120%);
+        -webkit-backdrop-filter: blur(40px) saturate(120%);
+        border: 1px solid rgba(255, 69, 58, 0.2); /* Apple Red border */
+        border-radius: 32px;
+        padding: 48px;
+        text-align: center;
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6), inset 0 0 40px rgba(255, 69, 58, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+
+        /* Top Red Line */
+        .glass-danger::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff453a, transparent);
+        }
+
+    /* TYPOGRAPHY */
+    .danger-icon {
+        font-size: 3rem;
+        margin-bottom: 24px;
+        display: inline-block;
+        filter: drop-shadow(0 0 20px rgba(255, 69, 58, 0.4));
+    }
+
+    .delete-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 12px;
+        letter-spacing: -0.02em;
+    }
+
+    .delete-desc {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 1rem;
+        margin-bottom: 40px;
+        line-height: 1.5;
+    }
+
+    /* PREVIEW CARD */
+    .preview-box {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 16px;
+        padding: 24px;
+        text-align: left;
+        margin-bottom: 40px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .preview-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: rgba(255, 255, 255, 0.3);
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .preview-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 4px;
+    }
+
+    .preview-meta {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* ACTIONS */
+    .actions-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .btn-destroy {
+        background: #ff453a; /* Apple Red */
+        color: #fff;
+        border: none;
+        width: 100%;
+        padding: 16px;
+        border-radius: 16px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+        box-shadow: 0 10px 30px rgba(255, 69, 58, 0.25);
+    }
+
+        .btn-destroy:hover {
+            background: #ff5f57;
+            transform: scale(1.02);
+            box-shadow: 0 15px 40px rgba(255, 69, 58, 0.35);
+        }
+
+    .btn-cancel {
+        color: rgba(255, 255, 255, 0.4);
+        text-decoration: none;
+        font-size: 0.95rem;
+        padding: 12px;
+        transition: color 0.2s;
+    }
+
+        .btn-cancel:hover {
+            color: #fff;
+        }
+
+    @@keyframes shakeIn {
+        10%, 90% {
+            transform: translate3d(-1px, 0, 0);
+        }
+
+        20%, 80% {
+            transform: translate3d(2px, 0, 0);
+        }
+
+        30%, 50%, 70% {
+            transform: translate3d(-4px, 0, 0);
+        }
+
+        40%, 60% {
+            transform: translate3d(4px, 0, 0);
+        }
+    }
+</style>
+
+<div class="delete-wrapper">
+
+    <div class="glass-danger">
+
+        <div class="danger-icon">⚠️</div>
+
+        <h1 class="delete-title">Delete Article?</h1>
+        <p class="delete-desc">This action cannot be undone. The article will be permanently removed from your library.</p>
+
+        <div class="preview-box">
+            <div class="preview-label">Target Article</div>
+            <div class="preview-title">@Model.Title</div>
+            <div class="preview-meta">
+                @Model.PublicationDate.ToString("MMM dd, yyyy") • @Model.Category
+            </div>
+        </div>
+
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="actions-stack">
+                <button type="submit" class="btn-destroy">
+                    Delete Permanently
+                </button>
+
+                <a asp-action="Index" class="btn-cancel">
+                    Cancel
+                </a>
+            </div>
+        </form>
+
+    </div>
 </div>

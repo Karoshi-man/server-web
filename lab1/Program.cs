@@ -3,33 +3,45 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<JournalContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.CheckConsentNeeded = context => false;
+    options.MinimumSameSitePolicy = SameSiteMode.None;
+});
+
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.Name = ".Journal.Session";
+    options.Cookie.IsEssential = true;
+    options.Cookie.HttpOnly = true;
+});
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+
 app.UseRouting();
 
+app.UseCookiePolicy();
 app.UseAuthorization();
-
-app.MapStaticAssets();
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
-
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

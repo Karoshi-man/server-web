@@ -28,17 +28,14 @@ namespace lab1.Controllers
         // GET: Authors/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var author = await _context.Authors
+                .Include(a => a.ArticleAuthors)
+                    .ThenInclude(aa => aa.Article)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (author == null)
-            {
-                return NotFound();
-            }
+
+            if (author == null) return NotFound();
 
             return View(author);
         }

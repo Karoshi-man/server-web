@@ -43,15 +43,16 @@
 
 ## 📚 Course Syllabus & Progress
 
-The syllabus has been adapted to reflect the advanced implementation of the platform, fulfilling Master's degree curriculum requirements.
+The syllabus directly reflects the Master's degree curriculum requirements for the "Server-Side Web Development" course.
 
 | ID | Topic | Key Concepts & Implementation | Status |
 | :--- | :--- | :--- | :--- |
-| **Lab 1** | **MVC Architecture & Data Modeling** | EF Core Code-First, CRUD Operations, Complex Many-to-Many Relationships (`ArticleAuthors`), Navigation Properties, Custom HTML5/CSS3 Grid UI. | ✅ Completed |
-| **Lab 2** | **Identity, Security & Authorization** | ASP.NET Core Identity, Role-based Access Control (`Admin` vs `User`), Custom Auth Views (Login/Register), Server-side Age Validation, Anti-autofill security hacks. | ✅ Completed |
-| **Lab 3** | **Business Logic & Collaboration** | Co-author Invitation System (Pending/Accept/Decline), State Management (Draft vs Published), 10-point Decimal Rating System, Dynamic Filtering & Sorting. | ✅ Completed |
-| **Lab 4** | **RESTful API Development** | API Controllers, Swagger/OpenAPI, DTOs, Automapper, Data Serialization. | ⏳ Planned |
-| **Lab 5** | **Advanced Architecture & Deployment** | Clean Architecture refactoring, Dockerization, SignalR for real-time notifications. | ⏳ Planned |
+| **Lab 1** | **Розробка web-додатку ASP.Net Core MVC** | EF Core Code-First, CRUD Operations, Controllers & Views, Relational Data Schema mapping. | ✅ Completed |
+| **Lab 2** | **Використання сесій для тимчасового зберігання даних** | Temporary session storage for edited data, Model-level validation attributes, Clearing sessions. | ✅ Completed |
+| **Lab 3** | **Авторизація та автентифікація на основі Identity** | ASP.NET Core Identity, Individual accounts, Role-based Access Control (Admin), Admin Panel for user management. | ✅ Completed |
+| **Lab 4** | **Використання SignalR Core для створення чатів** | Real-time messaging, SignalR Hubs, Private and Public messages, File/Image transfer. | ⏳ Planned |
+| **Lab 5** | **Побудова REST-сервісу з використанням Web API** | ASP.NET Core Web API, Repository Pattern, API Controllers, Swagger UI testing. | ⏳ Planned |
+| **Lab 6** | **Розробка мікросервісів** | Microservices Architecture, Service separation for models. | ⏳ Planned |
 
 ---
 
@@ -71,19 +72,19 @@ The UI was designed to feel like a high-end desktop application or a developer-f
 
 ### 🏠 The Library (Main Feed)
 > *Features holographic text, glass-panel cards, dynamic rating badges, and instant dropdown filters.*
-<img src="https://via.placeholder.com/800x400?text=Insert+Screenshot_1+(Library)+Here" alt="Library" width="100%">
+<img src="https://placehold.co/800x400/0a0f1e/00ffc8?text=Library+Feed+%7C+Glassmorphism+UI&font=Montserrat" alt="Library" width="100%">
 
 ### ✍️ The Editor Canvas
 > *A distraction-free, focus-mode editor with custom styled select menus and glowing action buttons.*
-<img src="https://via.placeholder.com/800x400?text=Insert+Screenshot_5+(Editor)+Here" alt="Editor" width="100%">
+<img src="https://placehold.co/800x400/0a0f1e/00ffc8?text=Focus-Mode+Editor+%7C+Neon+Accents&font=Montserrat" alt="Editor" width="100%">
 
-### 👤 Author Initialization
-> *A secure onboarding screen demonstrating responsive grid layouts and server-side model validation.*
-<img src="https://via.placeholder.com/800x400?text=Insert+Screenshot_3+(Init+Profile)+Here" alt="Profile Init" width="100%">
+### 👤 Author Initialization & Profile
+> *A secure onboarding screen demonstrating responsive grid layouts and three-part full name combinations.*
+<img src="https://placehold.co/800x400/0a0f1e/00ffc8?text=Secure+Author+Initialization&font=Montserrat" alt="Profile Init" width="100%">
 
 ### 🔒 System Access (Admin Auth)
 > *A minimalist, dark-themed authentication portal protected against browser autofill interventions.*
-<img src="https://via.placeholder.com/800x400?text=Insert+Screenshot_4+(Login)+Here" alt="Auth" width="100%">
+<img src="https://placehold.co/800x400/0a0f1e/00ffc8?text=System+Access+%7C+Admin+Portal&font=Montserrat" alt="Auth" width="100%">
 
 ---
 

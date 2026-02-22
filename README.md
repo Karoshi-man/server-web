@@ -1,6 +1,6 @@
 <div align="center">
 
-  <h1>Server-Side Web Development</h1>
+  <h1>iJournal &mdash; Collaborative Publishing Platform</h1>
   <p>
     <strong>Master's Degree Program | Data Engineering</strong><br>
     Lviv Polytechnic National University
@@ -8,80 +8,92 @@
 
   <p>
     <a href="https://learn.microsoft.com/en-us/aspnet/core/?view=aspnetcore-8.0">
-      <img src="https://img.shields.io/badge/.NET-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET" />
+      <img src="https://img.shields.io/badge/.NET_8.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET" />
     </a>
-    <a href="https://getbootstrap.com/">
-      <img src="https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white" alt="Bootstrap" />
+    <a href="https://learn.microsoft.com/en-us/ef/core/">
+      <img src="https://img.shields.io/badge/Entity_Framework-388E3C?style=for-the-badge&logo=databricks&logoColor=white" alt="EF Core" />
     </a>
     <a href="https://www.microsoft.com/en-us/sql-server">
       <img src="https://img.shields.io/badge/SQL_Server-CC2927?style=for-the-badge&logo=microsoft-sql-server&logoColor=white" alt="SQL Server" />
     </a>
      <a href="#">
-      <img src="https://img.shields.io/badge/Glassmorphism-Ui-00dfd8?style=for-the-badge" alt="UI Design" />
+      <img src="https://img.shields.io/badge/Deep_Glassmorphism_UI-000000?style=for-the-badge&logo=css3&logoColor=00ffc8" alt="UI Design" />
     </a>
   </p>
 
   <p>
-    This repository contains the source code and documentation for laboratory works focused on building scalable, secure, and modern web applications using the <strong>ASP.NET Core</strong> ecosystem.
+    A scalable, secure, and visually immersive web application built with <strong>ASP.NET Core MVC</strong>. This repository contains the source code for laboratory works focused on advanced data modeling, secure authentication, and complex business logic without reliance on standard UI frameworks.
   </p>
 
   <br />
 
   <p>
-    <a href="#-course-syllabus"><strong>Explore the Labs »</strong></a>
+    <a href="#-course-syllabus--progress"><strong>Explore the Labs »</strong></a>
     <br />
     <br />
-    <a href="#-visual-showcase">View Demo</a>
+    <a href="#-key-features-implemented">Features</a>
+    ·
+    <a href="#-visual-showcase">Visual Showcase</a>
     ·
     <a href="https://github.com/Karoshi-man/server-web/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/Karoshi-man/server-web/pulls">Request Feature</a>
   </p>
 </div>
 
-<hr />
+---
 
 ## 📚 Course Syllabus & Progress
 
-| ID | Topic | Key Concepts | Status |
-| :--- | :--- | :--- | :--- |
-| **Lab 1** | **MVC Architecture & Data Modeling** | Entity Framework Core, CRUD Operations, SQL Server, Many-to-Many Relationships, LINQ. | ✅ Completed |
-| **Lab 2** | **Authentication & Authorization** | ASP.NET Identity, Roles & Claims, JWT/Cookies, Secure Password Hashing. | ⏳ Planned |
-| **Lab 3** | **RESTful API Development** | API Controllers, Swagger/OpenAPI, DTOs, Automapper, Postman Testing. | ⏳ Planned |
-| **Lab 4** | **Advanced Architecture & Deployment** | Clean Architecture, Unit Testing (xUnit), Dockerization, CI/CD Pipelines. | ⏳ Planned |
-| **Lab 5** | **Real-time Communication** | SignalR, WebSockets, Interactive Dashboards. | ⏳ Planned |
+The syllabus has been adapted to reflect the advanced implementation of the platform, fulfilling Master's degree curriculum requirements.
 
-> *Note: The syllabus matches the Master's degree curriculum requirements.*
+| ID | Topic | Key Concepts & Implementation | Status |
+| :--- | :--- | :--- | :--- |
+| **Lab 1** | **MVC Architecture & Data Modeling** | EF Core Code-First, CRUD Operations, Complex Many-to-Many Relationships (`ArticleAuthors`), Navigation Properties, Custom HTML5/CSS3 Grid UI. | ✅ Completed |
+| **Lab 2** | **Identity, Security & Authorization** | ASP.NET Core Identity, Role-based Access Control (`Admin` vs `User`), Custom Auth Views (Login/Register), Server-side Age Validation, Anti-autofill security hacks. | ✅ Completed |
+| **Lab 3** | **Business Logic & Collaboration** | Co-author Invitation System (Pending/Accept/Decline), State Management (Draft vs Published), 10-point Decimal Rating System, Dynamic Filtering & Sorting. | ✅ Completed |
+| **Lab 4** | **RESTful API Development** | API Controllers, Swagger/OpenAPI, DTOs, Automapper, Data Serialization. | ⏳ Planned |
+| **Lab 5** | **Advanced Architecture & Deployment** | Clean Architecture refactoring, Dockerization, SignalR for real-time notifications. | ⏳ Planned |
+
+---
+
+## ✨ Key Features Implemented
+
+* **🔐 Enterprise-Grade Security:** Custom implementation of ASP.NET Identity. Strict route protection (`[Authorize]`), logical authorization (users can only edit/delete their own articles), and a dedicated "System Access" portal for Administrators.
+* **🤝 Collaborative Publishing:** A robust "Cabinet" system where authors can manage drafts, publish articles, and send secure email invitations to other authors to co-write publications.
+* **📊 Dynamic Library Filtering:** Users can sort the global library by Category, Date, Article Rating, or "Top Authors" using LINQ-powered queries.
+* **⭐ Precision Rating System:** Both Articles and Authors have a 1-to-10 rating system calculating average scores to the first decimal point (`double` precision).
+* **🚫 Zero-Framework UI:** The entire platform abandons Bootstrap in favor of a 100% custom **Deep Blue / Cyberpunk Glassmorphism** design language. Features include `backdrop-filter` blurring, neon cyan (`#00ffc8`) accents, and complex CSS Grids.
 
 ---
 
 ## 🎨 Visual Showcase
 
-The project features a custom **Cyberpunk / Dark Glassmorphism** design language, moving away from standard Bootstrap templates to ensure a unique user experience.
+The UI was designed to feel like a high-end desktop application or a developer-focused tool.
 
-### 🏠 Home Page
-> *A minimalist landing page with holographic text effects and glass cards.*
-![Home Page](https://via.placeholder.com/800x400?text=Insert+Home+Page+Screenshot+Here)
+### 🏠 The Library (Main Feed)
+> *Features holographic text, glass-panel cards, dynamic rating badges, and instant dropdown filters.*
+<img src="https://via.placeholder.com/800x400?text=Insert+Screenshot_1+(Library)+Here" alt="Library" width="100%">
 
-### 📄 Articles Grid
-> *Responsive grid layout with neon hover effects and dynamic badges.*
-![Articles Page](https://via.placeholder.com/800x400?text=Insert+Articles+Screenshot+Here)
+### ✍️ The Editor Canvas
+> *A distraction-free, focus-mode editor with custom styled select menus and glowing action buttons.*
+<img src="https://via.placeholder.com/800x400?text=Insert+Screenshot_5+(Editor)+Here" alt="Editor" width="100%">
 
-### ✍️ Content Creation
-> *Focus-mode editor with multi-select author support.*
-![Create Page](https://via.placeholder.com/800x400?text=Insert+Create+Page+Screenshot+Here)
+### 👤 Author Initialization
+> *A secure onboarding screen demonstrating responsive grid layouts and server-side model validation.*
+<img src="https://via.placeholder.com/800x400?text=Insert+Screenshot_3+(Init+Profile)+Here" alt="Profile Init" width="100%">
+
+### 🔒 System Access (Admin Auth)
+> *A minimalist, dark-themed authentication portal protected against browser autofill interventions.*
+<img src="https://via.placeholder.com/800x400?text=Insert+Screenshot_4+(Login)+Here" alt="Auth" width="100%">
 
 ---
 
 ## 🛠️ Tech Stack
 
-This project is built using the latest industry standards:
-
-* **Framework:** ASP.NET Core 8.0 / 9.0 (MVC)
-* **Database:** Microsoft SQL Server (LocalDB) via Entity Framework Core
-* **ORM:** Entity Framework Core (Code-First approach)
-* **Frontend:** Razor Views, Bootstrap 5, Custom CSS3 (Glassmorphism), jQuery
-* **Tools:** Visual Studio 2022, Git
+* **Backend Framework:** ASP.NET Core 8.0 (MVC)
+* **Database & ORM:** Microsoft SQL Server via Entity Framework Core (Code-First)
+* **Security:** ASP.NET Core Identity (Cookie-based auth, Role Management)
+* **Frontend Architecture:** Razor Views (`.cshtml`), Vanilla CSS3, HTML5
+* **Design System:** Custom CSS (Flexbox, CSS Grid, Backdrop Filters, Custom SVG Icons) - *No external CSS frameworks used.*
 
 ---
 
@@ -90,9 +102,8 @@ This project is built using the latest industry standards:
 Follow these steps to set up the project locally.
 
 ### Prerequisites
-
-* [.NET SDK](https://dotnet.microsoft.com/download) installed.
-* [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (or LocalDB which comes with VS).
+* [.NET 8.0 SDK](https://dotnet.microsoft.com/download)
+* [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (or LocalDB included with Visual Studio)
 
 ### Installation
 
@@ -107,7 +118,7 @@ Follow these steps to set up the project locally.
     dotnet restore
     ```
 
-3.  **Update Database** (Apply Migrations)
+3.  **Apply Database Migrations**
     ```bash
     cd lab1
     dotnet ef database update
@@ -122,12 +133,12 @@ Follow these steps to set up the project locally.
 
 ## 👤 Author
 
-**Martin (Karoshi-man)**
+**Martin Fesenko (Karoshi-man)**
 * Github: [@Karoshi-man](https://github.com/Karoshi-man)
-* Role: Master's Student, Data Engineering
+* Role: Master's Student, Data Engineering (Future ML Engineer)
 
 ---
 
 <div align="center">
-  <small>&copy; 2026 Online Journal Project. Designed for educational purposes.</small>
+  <small>&copy; 2026 iJournal Project. Designed in Lviv.</small>
 </div>

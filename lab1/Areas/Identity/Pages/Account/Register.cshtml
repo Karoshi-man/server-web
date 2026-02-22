@@ -1,0 +1,352 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Sign Up";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - iJournal</title>
+    <style>
+        /* --- Reset & Base --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #010612;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+        }
+
+        /* --- Abyssal Background Ambient --- */
+        .abyss-ambient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .deep-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(140px);
+            opacity: 0.5;
+            mix-blend-mode: screen;
+            animation: deepFloat 25s infinite alternate ease-in-out;
+        }
+
+        .db-1 {
+            width: 70vw;
+            height: 70vw;
+            background: linear-gradient(to right, #020024, #090979);
+            top: -20%;
+            left: -20%;
+        }
+
+        .db-2 {
+            width: 50vw;
+            height: 50vw;
+            background: linear-gradient(to right, #110022, #001275);
+            bottom: -20%;
+            right: -10%;
+            animation-direction: alternate-reverse;
+            animation-duration: 35s;
+        }
+
+        @@keyframes deepFloat {
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(5vw, 10vh) scale(1.05) rotate(15deg);
+            }
+        }
+
+        /* --- Hyper-Glass Split Container --- */
+        .hyper-glass-container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            width: 90%;
+            max-width: 1200px;
+            min-height: 700px;
+            background: rgba(10, 20, 40, 0.25);
+            backdrop-filter: blur(60px) saturate(120%);
+            -webkit-backdrop-filter: blur(60px) saturate(120%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 40px;
+            box-shadow: inset 2px 2px 4px rgba(255, 255, 255, 0.15), inset -2px -2px 10px rgba(0, 0, 0, 0.5), 0 40px 100px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+        }
+
+        /* Ліва частина - Контент */
+        .glass-content {
+            flex: 1;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.2);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .brand-logo {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #fff;
+        }
+
+            .brand-logo svg {
+                width: 24px;
+                height: 24px;
+                fill: #fff;
+            }
+
+        /* ВИПРАВЛЕННЯ: Збільшено line-height та додано padding-bottom для літер з хвостиками (y, g, p) */
+        .hero-title {
+            font-size: 56px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            background: linear-gradient(180deg, #ffffff 40%, #7b88a8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.6;
+            max-width: 90%;
+            text-align: center; /* Центрує сам текст */
+            margin: 0 auto; /* Рівномірно розподіляє відступи по боках */
+        }
+
+        .abstract-quote {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.4);
+            border-left: 2px solid rgba(0, 113, 227, 0.5);
+            padding-left: 15px;
+        }
+
+        /* Права частина - Форма */
+        .glass-form-wrapper {
+            flex: 1;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-header {
+            margin-bottom: 40px;
+        }
+
+            .form-header h2 {
+                font-size: 28px;
+                font-weight: 600;
+                margin-bottom: 8px;
+            }
+
+            .form-header p {
+                color: rgba(255, 255, 255, 0.5);
+                font-size: 15px;
+            }
+
+        .input-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .deep-input {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+        }
+
+            .deep-input::placeholder {
+                color: rgba(255, 255, 255, 0.3);
+            }
+
+            .deep-input:focus {
+                outline: none;
+                background: rgba(10, 20, 40, 0.5);
+                border-color: rgba(0, 113, 227, 0.5);
+                box-shadow: inset 0 2px 6px rgba(0,0,0,0.5), 0 0 0 4px rgba(0, 113, 227, 0.15);
+            }
+
+        /* ВИПРАВЛЕННЯ КНОПКИ: Вужча, по центру, без кольорового світіння (чисте скло) */
+        .btn-accent-glass {
+            display: block;
+            width: 220px;
+            margin: 20px auto 0 auto;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            /* Тільки нейтральні тіні, ніякого неону */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+        }
+
+            .btn-accent-glass:hover {
+                transform: translateY(-2px);
+                background: rgba(255, 255, 255, 0.1);
+                border-color: rgba(255, 255, 255, 0.3);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.2);
+            }
+
+        .text-danger {
+            color: #ff453a;
+            font-size: 13px;
+            margin-top: 8px;
+            display: block;
+            padding-left: 5px;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+            .login-link a {
+                color: #ffffff;
+                text-decoration: none;
+                font-weight: 500;
+                transition: opacity 0.2s;
+                border-bottom: 1px solid transparent;
+            }
+
+                .login-link a:hover {
+                    opacity: 0.8;
+                    border-bottom: 1px solid #ffffff;
+                }
+
+        /* Адаптивність */
+        @@media (max-width: 900px) {
+            .hyper-glass-container {
+                flex-direction: column;
+                min-height: auto;
+                margin: 20px;
+            }
+
+            .glass-content {
+                padding: 40px;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
+
+            .glass-form-wrapper {
+                padding: 40px;
+            }
+
+            .hero-title {
+                font-size: 40px;
+            }
+
+            .btn-accent-glass {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="abyss-ambient">
+        <div class="deep-blob db-1"></div>
+        <div class="deep-blob db-2"></div>
+    </div>
+
+    <div class="hyper-glass-container">
+        <div class="glass-content">
+            <a href="~/" class="brand-logo">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2zm0 3.83L18.17 19H5.83L12 5.83z" /></svg>
+                iJournal
+            </a>
+
+            <div style="margin-top: auto; margin-bottom: auto;">
+                <h1 class="hero-title">Portray YourSelf</h1>
+                <p class="hero-subtitle">Establish your secure access point. Your data is protected by enterprise-grade ASP.NET Core cryptography</p>
+            </div>
+
+            <div class="abstract-quote">
+                "Security is not a feature. It’s a foundation"
+            </div>
+        </div>
+
+        <div class="glass-form-wrapper">
+            <div class="form-header">
+                <h2>Create Account</h2>
+                <p>Enter your details to generate your cryptographic key</p>
+            </div>
+
+            <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="input-group">
+                    <input asp-for="Input.Email" class="deep-input" aria-required="true" placeholder="Email" readonly onfocus="this.removeAttribute('readonly');" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+
+                <div class="input-group">
+                    <input asp-for="Input.Password" class="deep-input" aria-required="true" placeholder="Password" type="password" readonly onfocus="this.removeAttribute('readonly');" />
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+
+                <div class="input-group">
+                    <input asp-for="Input.ConfirmPassword" class="deep-input" aria-required="true" placeholder="Confirm Password" type="password" readonly onfocus="this.removeAttribute('readonly');" />
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <button id="registerSubmit" type="submit" class="btn-accent-glass">Sign Up</button>
+            </form>
+
+            <div class="login-link">
+                Already have an account? <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Sign In</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+</body>
+</html>

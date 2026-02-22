@@ -1,0 +1,96 @@
+﻿@model IEnumerable<lab1.Models.Article>
+@{
+    ViewData["Title"] = "My Drafts";
+}
+
+<style>
+    .drafts-container {
+        max-width: 900px;
+        margin: 40px auto;
+        animation: fadeIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .glass-box {
+        background: rgba(10, 15, 30, 0.4);
+        backdrop-filter: blur(40px) saturate(120%);
+        -webkit-backdrop-filter: blur(40px) saturate(120%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255,255,255,0.05);
+    }
+
+    .draft-row {
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px dashed rgba(255, 255, 255, 0.15); /* Пунктирна рамка для чернеток */
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+        .draft-row:hover {
+            background: rgba(255, 255, 255, 0.03);
+            transform: translateX(5px);
+        }
+
+    .draft-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .draft-meta {
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.4);
+        margin-top: 5px;
+    }
+
+    .btn-return {
+        display: inline-block;
+        margin-bottom: 20px;
+        color: #8ab4f8;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+        .btn-return:hover {
+            color: #fff;
+        }
+</style>
+
+<div class="drafts-container">
+    <a asp-action="Index" class="btn-return">&larr; Back to Workspace</a>
+
+    <div class="glass-box">
+        <h2 style="font-size: 1.8rem; color: #fff; margin-bottom: 30px; font-weight: 700;">Unpublished Drafts</h2>
+
+        @if (Model != null && Model.Any())
+        {
+            foreach (var draft in Model)
+            {
+                <div class="draft-row">
+                    <div>
+                        <a asp-controller="Articles" asp-action="Edit" asp-route-id="@draft.Id" class="draft-title">
+                            @(string.IsNullOrEmpty(draft.Title) ? "Untitled Draft" : draft.Title)
+                        </a>
+                        <div class="draft-meta">Last modified: @draft.PublicationDate.ToString("MMM dd, yyyy")</div>
+                    </div>
+
+                    <div style="display: flex; gap: 15px;">
+                        <a asp-controller="Articles" asp-action="Edit" asp-route-id="@draft.Id" style="color: #00ffc8; text-decoration: none;">Resume &rarr;</a>
+                        <a asp-controller="Articles" asp-action="Delete" asp-route-id="@draft.Id" style="color: #ff453a; text-decoration: none;">Discard</a>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p style="color: rgba(255,255,255,0.4);">You don't have any saved drafts.</p>
+        }
+    </div>
+</div>

@@ -8,8 +8,124 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
 
     <style>
+        .flatpickr-calendar {
+            background: rgba(15, 20, 35, 0.85) !important;
+            backdrop-filter: blur(30px) saturate(150%) !important;
+            -webkit-backdrop-filter: blur(30px) saturate(150%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+            color: #fff !important;
+            padding: 15px !important;
+            min-width: 340px !important;
+            font-family: inherit !important;
+        }
+
+        .flatpickr-months {
+            margin-bottom: 10px !important;
+        }
+
+        .flatpickr-month, .flatpickr-current-month {
+            color: #fff !important;
+            fill: #fff !important;
+            padding-top: 0 !important;
+        }
+
+            .flatpickr-current-month .flatpickr-monthDropdown-months {
+                background: rgba(15, 20, 35, 0.9) !important;
+                color: #fff !important;
+                border-radius: 8px;
+                padding: 5px !important;
+                font-weight: 600 !important;
+            }
+
+            .flatpickr-current-month input.cur-year {
+                color: #fff !important;
+                font-weight: 600 !important;
+            }
+
+            .flatpickr-current-month .numInputWrapper span.arrowUp:after {
+                border-bottom-color: rgba(255, 255, 255, 0.8) !important;
+                top: 3px !important;
+            }
+            .flatpickr-current-month .numInputWrapper span.arrowDown:after {
+                border-top-color: rgba(255, 255, 255, 0.8) !important;
+            }
+            .flatpickr-current-month .numInputWrapper span:hover:after {
+                border-bottom-color: #00ffc8 !important;
+                border-top-color: #00ffc8 !important;
+            }
+
+        span.flatpickr-weekday {
+            color: rgba(255, 255, 255, 0.4) !important;
+            font-weight: 600 !important;
+            font-size: 0.9rem !important;
+        }
+
+        .flatpickr-days {
+            width: 100% !important;
+        }
+
+        .dayContainer {
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+            justify-content: space-around !important;
+        }
+
+        .flatpickr-day {
+            color: rgba(255, 255, 255, 0.9) !important;
+            border-radius: 12px !important;
+            border: 1px solid transparent !important;
+            transition: all 0.2s !important;
+            font-size: 1rem !important;
+            margin-top: 5px !important;
+            height: 40px !important;
+            line-height: 40px !important;
+            flex-basis: 13.5% !important;
+            max-width: 40px !important;
+        }
+
+            .flatpickr-day:hover, .flatpickr-day.prevMonthDay:hover, .flatpickr-day.nextMonthDay:hover {
+                background: rgba(255, 255, 255, 0.15) !important;
+                border-color: rgba(255, 255, 255, 0.2) !important;
+            }
+
+            .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay {
+                color: rgba(255, 255, 255, 0.2) !important;
+            }
+
+            .flatpickr-day.today {
+                border-color: rgba(0, 255, 200, 0.5) !important;
+            }
+
+            .flatpickr-day.selected, .flatpickr-day.selected:hover {
+                background: #00ffc8 !important;
+                color: #000 !important;
+                border-color: #00ffc8 !important;
+                font-weight: 800 !important;
+                box-shadow: 0 0 20px rgba(0, 255, 200, 0.4) !important;
+            }
+
+        .flatpickr-prev-month svg, .flatpickr-next-month svg {
+            fill: rgba(255, 255, 255, 0.8) !important;
+            transition: fill 0.2s !important;
+            width: 16px !important;
+            height: 16px !important;
+        }
+
+        .flatpickr-prev-month:hover svg, .flatpickr-next-month:hover svg {
+            fill: #00ffc8 !important;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            display: none !important;
+        }
+
         :root {
             --glass-surface: rgba(255, 255, 255, 0.03);
             --glass-border: rgba(255, 255, 255, 0.08);
@@ -31,7 +147,6 @@
             background: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #000000 60%);
         }
 
-        /* Ambient Light (Фонове світло) */
         .ambient-light {
             position: fixed;
             top: -20%;
@@ -57,7 +172,6 @@
             }
         }
 
-        /* NAVIGATION - Floating Capsule */
         .nav-container {
             position: fixed;
             top: 24px;
@@ -74,7 +188,7 @@
             -webkit-backdrop-filter: blur(25px) saturate(180%);
             border: 1px solid var(--glass-border);
             padding: 12px 30px;
-            border-radius: 100px; /* Капсула */
+            border-radius: 100px;
             display: flex;
             align-items: center;
             gap: 30px;
@@ -117,7 +231,6 @@
                 color: #fff;
             }
 
-        /* MAIN CONTENT */
         .content-wrapper {
             margin-top: 120px;
             flex: 1 0 auto;
@@ -126,7 +239,6 @@
             width: 100%;
         }
 
-        /* FOOTER */
         .minimal-footer {
             flex-shrink: 0;
             text-align: center;
@@ -146,6 +258,7 @@
                 }
 
     </style>
+
 </head>
 <body>
 
@@ -153,13 +266,14 @@
 
     <div class="nav-container">
         <nav class="glass-nav">
-            <a class="nav-brand" asp-controller="Home" asp-action="Index">IJournal</a>
+            <a class="nav-brand" asp-controller="Home" asp-action="Index">iJournal</a>
             <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.1);"></div>
             <ul class="nav-links">
-                <li><a class="nav-item-link" asp-controller="Articles" asp-action="Index">Статті</a></li>
-                <li><a class="nav-item-link" asp-controller="Authors" asp-action="Index">Автори</a></li>
-                <li><a class="nav-item-link" asp-controller="Articles" asp-action="Create">Новий допис</a></li>
+                <li><a class="nav-item-link" asp-controller="Articles" asp-action="Index">Articles</a></li>
+                <li><a class="nav-item-link" asp-controller="Authors" asp-action="Index">Authors</a></li>
             </ul>
+            <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.1);"></div>
+            <partial name="_LoginPartial" />
         </nav>
     </div>
 
@@ -181,6 +295,17 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            flatpickr('input[type="date"]', {
+                altInput: true,
+                altFormat: "F j, Y",
+                dateFormat: "Y-m-d",
+                disableMobile: true
+            });
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

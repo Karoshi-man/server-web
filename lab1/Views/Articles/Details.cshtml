@@ -1,32 +1,30 @@
-﻿@model lab1.Models.Article
+﻿@using System.Security.Claims
+@model lab1.Models.Article
 
 @{
     ViewData["Title"] = Model.Title;
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
 
 <style>
-    /* IJournal Reading Mode Styles */
-
     .reader-container {
         max-width: 800px;
         margin: 0 auto;
         animation: fadeUp 1s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
 
-    /* GLASS CANVAS - READING SURFACE */
     .reading-glass {
         background: rgba(30, 30, 35, 0.4);
         backdrop-filter: blur(50px) saturate(100%);
         -webkit-backdrop-filter: blur(50px) saturate(100%);
         border: 1px solid rgba(255, 255, 255, 0.05);
         border-radius: 40px;
-        padding: 60px 80px; /* Великі відступи для повітря */
+        padding: 60px 80px;
         position: relative;
         overflow: hidden;
         box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
     }
 
-    /* HEADER TYPOGRAPHY */
     .article-title {
         font-size: 3.5rem;
         font-weight: 800;
@@ -39,7 +37,6 @@
         -webkit-text-fill-color: transparent;
     }
 
-    /* METADATA ROW */
     .meta-row {
         display: flex;
         align-items: center;
@@ -70,7 +67,6 @@
         font-weight: 500;
     }
 
-    /* RATING BADGE */
     .rating-badge {
         background: rgba(255, 214, 10, 0.1);
         color: #FFD60A;
@@ -83,17 +79,15 @@
         gap: 4px;
     }
 
-    /* CONTENT BODY - Optimised for Reading */
     .prose-content {
         font-size: 1.25rem;
         line-height: 1.7;
-        color: rgba(255, 255, 255, 0.85); /* Toned down white for eye comfort */
+        color: rgba(255, 255, 255, 0.85);
         white-space: pre-wrap;
-        font-family: 'Inter', -apple-system, sans-serif; /* Clean Sans-Serif looks more modern tech */
+        font-family: 'Inter', -apple-system, sans-serif;
         margin-bottom: 60px;
     }
 
-    /* AUTHORS SECTION */
     .authors-section {
         margin-top: 60px;
         padding-top: 30px;
@@ -132,7 +126,43 @@
         font-weight: 700;
     }
 
-    /* FOOTER ACTIONS */
+    /* --- Стилі для блоку рейтингу --- */
+    .glass-box {
+        background: rgba(10, 15, 30, 0.4);
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+    }
+
+    .deep-input {
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 12px;
+        color: #fff;
+        transition: all 0.3s;
+    }
+
+        .deep-input:focus {
+            outline: none;
+            border-color: #00ffc8;
+            background: rgba(10, 25, 60, 0.5);
+        }
+
+    .btn-submit {
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+        .btn-submit:hover {
+            background: rgba(0, 255, 200, 0.3) !important;
+            color: #fff !important;
+            transform: translateY(-2px);
+        }
+    /* -------------------------------- */
+
     .action-bar {
         display: flex;
         justify-content: space-between;
@@ -190,7 +220,6 @@
             color: #000;
         }
 
-    /* Responsive */
     @@media (max-width: 768px) {
         .reading-glass {
             padding: 40px 24px;
@@ -221,6 +250,13 @@
 
 <div class="reader-container py-5">
 
+    @if (TempData["Message"] != null)
+    {
+        <div style="color: #00ffc8; margin-bottom: 20px; font-weight: 500; background: rgba(0, 255, 200, 0.1); padding: 12px 20px; border-radius: 12px; border: 1px solid rgba(0, 255, 200, 0.2);">
+            ✓ @TempData["Message"]
+        </div>
+    }
+
     <div class="reading-glass">
 
         <header>
@@ -240,7 +276,7 @@
                 <div class="meta-item">
                     <span class="meta-label">Rating</span>
                     <span class="rating-badge">
-                        ★ @Model.Rating
+                        ★ @Model.Rating.ToString("0.0")
                     </span>
                 </div>
             </div>
@@ -265,15 +301,36 @@
             </div>
         }
 
+        @if (Model.UserId != currentUserId)
+        {
+            <div class="glass-box" style="margin-top: 40px; padding: 30px; border-color: rgba(0, 255, 200, 0.3);">
+                <h4 style="color: #fff; margin-bottom: 15px; font-size: 1.2rem;">Rate this article</h4>
+
+                <form asp-action="RateArticle" method="post" style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                    <input type="hidden" name="articleId" value="@Model.Id" />
+
+                    <input type="number" name="score" min="1" max="10" required
+                           class="deep-input" style="width: 100px; padding: 12px;" placeholder="1 - 10" />
+
+                    <button type="submit" class="btn-submit" style="margin-top: 0; min-width: 120px; padding: 12px 24px; background: rgba(0, 255, 200, 0.15); border-color: rgba(0, 255, 200, 0.4); color: #00ffc8; border-width: 1px; border-style: solid;">
+                        Submit Rating
+                    </button>
+                </form>
+            </div>
+        }
+
         <div class="action-bar">
             <a asp-action="Index" class="btn-back">
                 <span>&larr;</span> Library
             </a>
 
-            <div class="btn-group-actions">
-                <a asp-action="Delete" asp-route-id="@Model.Id" class="link-danger">Delete</a>
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-edit-primary">Edit Article</a>
-            </div>
+            @if (Model.UserId == currentUserId || User.IsInRole("Admin"))
+            {
+                <div class="btn-group-actions">
+                    <a asp-action="Delete" asp-route-id="@Model.Id" class="link-danger">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-edit-primary">Edit Article</a>
+                </div>
+            }
         </div>
 
     </div>

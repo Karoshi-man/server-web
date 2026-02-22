@@ -1,215 +1,332 @@
 ﻿@{
-    ViewData["Title"] = "Головна";
+    ViewData["Title"] = "iJournal - Beyond";
+    Layout = null;
 }
 
-<style>
-    /* TYPOGRAPHY */
-    .hero-section {
-        text-align: center;
-        padding: 80px 0 100px 0;
-        animation: fadeUp 1s cubic-bezier(0.2, 0.8, 0.2, 1);
-    }
-
-    .display-title {
-        font-size: 4rem; /* Великий, впевнений шрифт */
-        font-weight: 600;
-        letter-spacing: -0.03em;
-        line-height: 1.1;
-        background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.7) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 24px;
-    }
-
-    .subtitle {
-        font-size: 1.25rem;
-        color: var(--text-secondary);
-        max-width: 500px;
-        margin: 0 auto 40px auto;
-        font-weight: 400;
-        letter-spacing: -0.01em;
-    }
-
-    /* BUTTONS - Tactile Light */
-    .btn-group-custom {
-        display: inline-flex;
-        gap: 16px;
-    }
-
-    .btn-apple-primary {
-        background: #fff;
-        color: #000;
-        padding: 14px 32px;
-        border-radius: 100px;
-        font-weight: 600;
-        font-size: 1rem;
-        text-decoration: none;
-        transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.2s ease;
-        border: none;
-    }
-
-        .btn-apple-primary:hover {
-            transform: scale(1.04);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-            color: #000;
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <style>
+        /* --- Reset & Base --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-    .btn-apple-secondary {
-        background: rgba(255, 255, 255, 0.1);
-        color: #fff;
-        padding: 14px 32px;
-        border-radius: 100px;
-        font-weight: 500;
-        font-size: 1rem;
-        text-decoration: none;
-        backdrop-filter: blur(10px);
-        transition: background 0.2s ease;
-    }
-
-        .btn-apple-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
+        body {
+            background-color: #000103;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
         }
 
-    /* BENTO GRID CARDS */
-    .bento-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 24px;
-        padding: 0 20px;
-    }
-
-    .glass-card {
-        background: var(--glass-surface);
-        border: 1px solid var(--glass-border);
-        border-radius: 24px;
-        padding: 40px;
-        position: relative;
-        overflow: hidden;
-        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        height: 300px;
-    }
-
-        /* Ефект світіння зсередини при наведенні */
-        .glass-card::before {
-            content: '';
-            position: absolute;
+        /* --- Abyssal Background Ambient --- */
+        .abyss-ambient {
+            position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.06), transparent 40%);
-            opacity: 0;
-            transition: opacity 0.4s ease;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
             pointer-events: none;
         }
 
-        .glass-card:hover {
-            transform: translateY(-5px) scale(1.01);
-            background: rgba(255, 255, 255, 0.05);
-            border-color: var(--glass-highlight);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        .deep-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(140px);
+            opacity: 0.5;
+            mix-blend-mode: screen;
+            animation: deepFloat 25s infinite alternate ease-in-out;
         }
 
-            .glass-card:hover::before {
-                opacity: 1;
+        .db-1 {
+            width: 80vw;
+            height: 80vw;
+            background: linear-gradient(to right, #020024, #090979);
+            top: -30%;
+            left: -20%;
+        }
+
+        .db-2 {
+            width: 60vw;
+            height: 60vw;
+            background: linear-gradient(to right, #110022, #001275);
+            bottom: -20%;
+            right: -10%;
+            animation-direction: alternate-reverse;
+            animation-duration: 35s;
+        }
+
+        .db-3 {
+            width: 40vw;
+            height: 40vw;
+            background: #0044ff;
+            top: 40%;
+            left: 30%;
+            opacity: 0.15;
+            filter: blur(180px);
+        }
+
+        @@keyframes deepFloat {
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
             }
 
-    .card-icon {
-        font-size: 2rem;
-        margin-bottom: auto;
-        opacity: 0.8;
-    }
-
-    .card-title {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: #fff;
-        margin-bottom: 8px;
-    }
-
-    .card-desc {
-        color: var(--text-secondary);
-        font-size: 0.95rem;
-        line-height: 1.5;
-    }
-
-    /* Анімація появи */
-    @@keyframes fadeUp {
-        from {
-            opacity: 0;
-            transform: translateY(40px);
+            100% {
+                transform: translate(5vw, 10vh) scale(1.05) rotate(15deg);
+            }
         }
 
-        to {
-            opacity: 1;
-            transform: translateY(0);
+        /* --- Main Layout Container --- */
+        .liquid-universe {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 1200px;
+            height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-    }
 
-    /* Адаптивність */
-    @@media (max-width: 768px) {
-        .bento-grid {
-            grid-template-columns: 1fr;
+        /* --- The Hyper-Glass Morphing Container --- */
+        .liquid-island {
+            position: relative;
+            padding: 100px 80px;
+            text-align: center;
+            background: rgba(10, 20, 40, 0.2);
+            backdrop-filter: blur(60px) saturate(120%);
+            -webkit-backdrop-filter: blur(60px) saturate(120%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: inset 2px 2px 4px rgba(255, 255, 255, 0.2), inset -2px -2px 10px rgba(0, 0, 0, 0.6), inset 0 0 60px rgba(0, 30, 155, 0.15), 0 40px 100px rgba(0, 0, 0, 0.8);
+            animation: islandMorph 30s ease-in-out infinite;
         }
 
-        .display-title {
-            font-size: 3rem;
+        @@keyframes islandMorph {
+            0% {
+                border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            }
+
+            33% {
+                border-radius: 40% 60% 50% 50% / 40% 50% 60% 50%;
+            }
+
+            66% {
+                border-radius: 70% 30% 50% 50% / 30% 70% 60% 40%;
+            }
+
+            100% {
+                border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            }
         }
-    }
-</style>
 
-<div class="hero-section">
-    <h1 class="display-title">Think different</h1>
-    <p class="subtitle">
-        IJournal - more than just a Journal <br />
-        you, your ideas, and a boundless canvas.
-    </p>
+        .hero-island {
+            width: 80%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
 
-    <div class="btn-group-custom">
-        <a asp-controller="Articles" asp-action="Index" class="btn-apple-primary">Читати</a>
-        <a asp-controller="Articles" asp-action="Create" class="btn-apple-secondary">Написати</a>
+        /* --- Content Typography --- */
+        .badge-glow {
+            display: inline-block;
+            padding: 10px 24px;
+            background: rgba(0, 50, 150, 0.2);
+            border: 1px solid rgba(100, 150, 255, 0.2);
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            color: #8ab4f8;
+            margin-bottom: 35px;
+            box-shadow: 0 0 20px rgba(0, 100, 255, 0.1);
+        }
+
+        .hero-title {
+            font-size: 84px;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            line-height: 1.05;
+            margin-bottom: 30px;
+            background: linear-gradient(180deg, #ffffff 30%, #5b698c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.6;
+            margin-bottom: 50px; /* Зменшив відступ, щоб дати місце кнопці адміна */
+            max-width: 650px;
+        }
+
+        /* --- Buttons Next Gen --- */
+        .btn-group {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+        }
+
+        .liquid-btn {
+            padding: 20px 48px;
+            border-radius: 100px;
+            font-size: 17px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-silver-glow {
+            background: rgba(0, 113, 227, 0.15);
+            color: #ffffff;
+            border: 1px solid rgba(100, 170, 255, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0, 113, 227, 0.2), inset 0 2px 4px rgba(255, 255, 255, 0.15);
+        }
+
+            .btn-silver-glow:hover {
+                transform: scale(1.04) translateY(-2px);
+                background: rgba(0, 113, 227, 0.3);
+                border-color: rgba(255, 255, 255, 0.7);
+                box-shadow: 0 15px 40px rgba(0, 113, 227, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.3);
+            }
+
+        .btn-abyss-glass {
+            background: rgba(0, 20, 60, 0.3);
+            color: #aaddff;
+            border: 1px solid rgba(100, 150, 255, 0.2);
+            backdrop-filter: blur(20px);
+            box-shadow: inset 0 0 20px rgba(0, 100, 255, 0.05);
+        }
+
+            .btn-abyss-glass:hover {
+                background: rgba(0, 30, 90, 0.5);
+                border-color: rgba(100, 150, 255, 0.5);
+                color: #ffffff;
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(0, 100, 255, 0.2);
+                transform: scale(1.04) translateY(-2px);
+            }
+
+        /* --- Кнопка Адміна (Stealth Portal) --- */
+        .admin-link-wrapper {
+            margin-top: 35px; /* Відриваємо від основних кнопок */
+        }
+
+        .btn-admin-stealth {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.3); /* Ледь помітний текст */
+            border: 1px solid transparent; /* Невидима рамка */
+            background: transparent;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+            /* Іконка замочка / щита поруч з текстом */
+            .btn-admin-stealth svg {
+                width: 14px;
+                height: 14px;
+                fill: currentColor;
+                opacity: 0.7;
+                transition: opacity 0.4s;
+            }
+
+            .btn-admin-stealth:hover {
+                color: #ffffff;
+                background: rgba(0, 255, 200, 0.05); /* Легкий холодний ціан-відтінок */
+                border: 1px solid rgba(0, 255, 200, 0.2);
+                box-shadow: 0 0 20px rgba(0, 255, 200, 0.1), inset 0 0 10px rgba(0, 255, 200, 0.05);
+                transform: translateY(-2px);
+            }
+
+                .btn-admin-stealth:hover svg {
+                    opacity: 1;
+                }
+
+        /* Адаптивність */
+        @@media (max-width: 1024px) {
+            .liquid-universe {
+                padding: 20px;
+            }
+
+            .hero-island {
+                width: 100%;
+                padding: 60px 30px;
+                border-radius: 40px !important;
+                animation: none;
+            }
+
+            .hero-title {
+                font-size: 52px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+                width: 100%;
+                max-width: 350px;
+            }
+
+            .liquid-btn {
+                width: 100%;
+            }
+
+            .admin-link-wrapper {
+                margin-top: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="abyss-ambient">
+        <div class="deep-blob db-1"></div>
+        <div class="deep-blob db-2"></div>
+        <div class="deep-blob db-3"></div>
     </div>
-</div>
 
-<div class="bento-grid">
-    <div class="glass-card" onmousemove="handleMouseMove(event)">
-        <div class="card-icon">⚡️</div>
-        <div>
-            <h3 class="card-title">Миттєвість</h3>
-            <p class="card-desc">Інтерфейс, що реагує швидше за думку. Ми прибрали все зайве, залишивши тільки швидкість.</p>
+    <div class="liquid-universe">
+        <div class="liquid-island hero-island">
+            <div class="badge-glow">iJournal</div>
+            <h1 class="hero-title">Draft Your Legacy<br>Secure Your Vision</h1>
+            <p class="hero-subtitle">Minimalism on the outside. Uncompromising power on the inside. Join the platform designed for thinkers and creators</p>
+
+            <div class="btn-group">
+                <a asp-area="Identity" asp-page="/Account/Register" class="liquid-btn btn-silver-glow">Sign Up</a>
+                <a asp-area="Identity" asp-page="/Account/Login" class="liquid-btn btn-abyss-glass">Log In</a>
+            </div>
+
+            <div class="admin-link-wrapper">
+                <a asp-area="Identity" asp-page="/Account/AdminLogin" class="btn-admin-stealth">
+                    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" /></svg>
+                    Admin
+                </a>
+            </div>
         </div>
     </div>
 
-    <div class="glass-card" onmousemove="handleMouseMove(event)">
-        <div class="card-icon">💎</div>
-        <div>
-            <h3 class="card-title">Прозорість</h3>
-            <p class="card-desc">Контекст завжди з вами. Наш "розумний матеріал" адаптується під ваш контент.</p>
-        </div>
-    </div>
-
-    <div class="glass-card" onmousemove="handleMouseMove(event)">
-        <div class="card-icon">🔒</div>
-        <div>
-            <h3 class="card-title">Приватність</h3>
-            <p class="card-desc">Ваші дані належать вам. Надійна архітектура без компромісів.</p>
-        </div>
-    </div>
-</div>
-
-<script>
-    // Скрипт для ефекту "слідування миші" на картках (Apple-style hover)
-    function handleMouseMove(e) {
-        const card = e.currentTarget;
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        card.style.setProperty('--mouse-x', `${x}px`);
-        card.style.setProperty('--mouse-y', `${y}px`);
-    }
-</script>
+</body>
+</html>

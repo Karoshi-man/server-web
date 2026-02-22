@@ -1,0 +1,256 @@
+﻿@page
+@model AdminLoginModel
+@{
+    ViewData["Title"] = "System Access";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - iJournal Control</title>
+    <style>
+        /* --- Reset & Base --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            /* Максимально темний, "глухий" фон для адмінки */
+            background-color: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+        }
+
+        /* --- Ambient (Дуже стриманий) --- */
+        .abyss-ambient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .deep-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(160px);
+            opacity: 0.3; /* Зменшена яскравість */
+            mix-blend-mode: screen;
+        }
+
+        .db-1 {
+            width: 50vw;
+            height: 50vw;
+            background: #020024;
+            top: -10%;
+            left: -10%;
+        }
+
+        .db-2 {
+            width: 40vw;
+            height: 40vw;
+            background: #001240;
+            bottom: -10%;
+            right: -5%;
+        }
+
+        /* --- Minimalist Admin Card --- */
+        .admin-glass-card {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 420px; /* Вузька, сфокусована картка */
+            padding: 50px 40px;
+            background: rgba(10, 15, 25, 0.4);
+            backdrop-filter: blur(40px) saturate(120%);
+            -webkit-backdrop-filter: blur(40px) saturate(120%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.1), 0 30px 60px rgba(0, 0, 0, 0.9);
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .sys-icon {
+            width: 32px;
+            height: 32px;
+            fill: #ffffff;
+            margin-bottom: 16px;
+            opacity: 0.8;
+        }
+
+        .admin-title {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+
+        .admin-subtitle {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        /* --- Inputs --- */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .deep-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+            .deep-input::placeholder {
+                color: rgba(255, 255, 255, 0.2);
+            }
+
+            .deep-input:focus {
+                outline: none;
+                background: rgba(10, 20, 40, 0.8);
+                border-color: rgba(0, 255, 200, 0.4); /* Строгий холодний акцент */
+                box-shadow: 0 0 0 1px rgba(0, 255, 200, 0.2);
+            }
+
+        /* --- Checkbox --- */
+        .glass-checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+        }
+
+            .glass-checkbox-group input[type="checkbox"] {
+                appearance: none;
+                -webkit-appearance: none;
+                margin-right: 10px;
+                width: 16px;
+                height: 16px;
+                cursor: pointer;
+                background: rgba(0, 0, 0, 0.6);
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                border-radius: 4px;
+                transition: all 0.2s;
+            }
+
+                .glass-checkbox-group input[type="checkbox"]:checked {
+                    background-color: #00ffc8; /* Колір доступу */
+                    border-color: #00ffc8;
+                    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+                    background-size: 70%;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                }
+
+        /* --- Button --- */
+        .btn-auth {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #ffffff;
+            color: #000000;
+            border: none;
+        }
+
+            .btn-auth:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 8px 20px rgba(255, 255, 255, 0.15);
+            }
+
+        .text-danger {
+            color: #ff453a;
+            font-size: 12px;
+            margin-top: 6px;
+            display: block;
+        }
+
+        .return-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.3);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+            .return-link:hover {
+                color: rgba(255, 255, 255, 0.7);
+            }
+    </style>
+</head>
+<body>
+
+    <div class="abyss-ambient">
+        <div class="deep-blob db-1"></div>
+        <div class="deep-blob db-2"></div>
+    </div>
+
+    <div class="admin-glass-card">
+        <div class="header-section">
+            <svg class="sys-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" /></svg>
+            <h1 class="admin-title">System Access</h1>
+            <p class="admin-subtitle">Authorized Personnel Only</p>
+        </div>
+
+        <form id="adminAccount" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="input-group">
+                <input asp-for="Input.Email" class="deep-input" aria-required="true" placeholder="Admin ID (Email)" readonly onfocus="this.removeAttribute('readonly');" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <div class="input-group">
+                <input asp-for="Input.Password" class="deep-input" aria-required="true" placeholder="Passcode" type="password" readonly onfocus="this.removeAttribute('readonly');" />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+
+            <label class="glass-checkbox-group">
+                <input asp-for="Input.RememberMe" />
+                Maintain Session
+            </label>
+
+            <button id="login-submit" type="submit" class="btn-auth">Authorize</button>
+        </form>
+
+        <a href="~/" class="return-link">&larr; Return to public portal</a>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+</body>
+</html>

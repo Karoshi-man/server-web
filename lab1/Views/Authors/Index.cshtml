@@ -5,7 +5,6 @@
 }
 
 <style>
-    /* AUTHORS HEADER */
     .authors-header {
         text-align: center;
         margin-bottom: 60px;
@@ -26,38 +25,40 @@
         font-size: 1.1rem;
         color: rgba(255, 255, 255, 0.4);
         max-width: 500px;
-        margin: 0 auto 40px auto;
+        margin: 0 auto 30px auto; /* Зменшив відступ знизу, щоб кнопка була ближче */
     }
 
-    /* NEW AUTHOR BUTTON */
-    .btn-add-author {
-        background: rgba(255, 255, 255, 0.1);
+    /* --- ВИПРАВЛЕНО: Змінено назву класу на btn-new-entry та покращено ефекти --- */
+    .btn-new-entry {
+        background: rgba(255, 255, 255, 0.05);
         color: #fff;
         padding: 12px 32px;
         border-radius: 100px;
         text-decoration: none;
-        font-weight: 500;
-        transition: all 0.2s;
+        font-weight: 600;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         border: 1px solid rgba(255, 255, 255, 0.1);
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
 
-        .btn-add-author:hover {
-            background: #fff;
-            color: #000;
-            border-color: #fff;
+        .btn-new-entry:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+            color: #fff;
         }
 
-    /* GRID LAYOUT */
     .authors-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
         gap: 30px;
     }
 
-    /* PROFILE CARD */
     .profile-card {
         background: rgba(255, 255, 255, 0.02);
         border: 1px solid rgba(255, 255, 255, 0.05);
@@ -76,7 +77,6 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
-    /* AVATAR */
     .avatar-wrapper {
         width: 100px;
         height: 100px;
@@ -98,7 +98,6 @@
         box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2), 0 0 30px rgba(255, 255, 255, 0.1);
     }
 
-    /* TEXT INFO */
     .profile-name {
         font-size: 1.25rem;
         font-weight: 600;
@@ -127,7 +126,6 @@
         min-height: 2.7em;
     }
 
-    /* ACTIONS OVERLAY (Visible on Hover) */
     .actions-bar {
         display: flex;
         justify-content: center;
@@ -157,18 +155,21 @@
     .delete-link:hover {
         color: #ff453a;
     }
-
 </style>
 
 <div class="container pb-5">
 
     <div class="authors-header">
-        <h1 class="authors-title">Authors</h1>
-        <p class="authors-subtitle">Voices that shape our journal.</p>
-
-        <a asp-action="Create" class="btn-add-author">
-            Add New Profile
-        </a>
+        <div>
+            <h1 class="authors-title">Authors</h1>
+            <p class="authors-subtitle">Voices that shape our journal.</p>
+        </div>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn-new-entry">
+                Add New Profile
+            </a>
+        }
     </div>
 
     <div class="authors-grid">
@@ -201,9 +202,12 @@
                 </a>
 
                 <div class="actions-bar">
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="action-link" title="Edit Profile">✎</a>
                     <a asp-action="Details" asp-route-id="@item.Id" class="action-link" title="View Profile">👁</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="action-link delete-link" title="Delete Profile">✕</a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="action-link" title="Edit Profile">✎</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="action-link delete-link" title="Delete Profile">✕</a>
+                    }
                 </div>
 
             </div>

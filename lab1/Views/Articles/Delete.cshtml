@@ -5,7 +5,6 @@
 }
 
 <style>
-    /* DELETE CONTAINER */
     .delete-wrapper {
         max-width: 540px;
         margin: 0 auto;
@@ -13,12 +12,11 @@
         animation: shakeIn 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
     }
 
-    /* DANGER GLASS */
     .glass-danger {
-        background: rgba(40, 10, 10, 0.6); /* Deep red tint */
+        background: rgba(40, 10, 10, 0.6);
         backdrop-filter: blur(40px) saturate(120%);
         -webkit-backdrop-filter: blur(40px) saturate(120%);
-        border: 1px solid rgba(255, 69, 58, 0.2); /* Apple Red border */
+        border: 1px solid rgba(255, 69, 58, 0.2);
         border-radius: 32px;
         padding: 48px;
         text-align: center;
@@ -27,8 +25,7 @@
         overflow: hidden;
     }
 
-        /* Top Red Line */
-        .glass-danger::before {
+    .glass-danger::before {
             content: '';
             position: absolute;
             top: 0;
@@ -36,9 +33,8 @@
             right: 0;
             height: 2px;
             background: linear-gradient(90deg, transparent, #ff453a, transparent);
-        }
+    }
 
-    /* TYPOGRAPHY */
     .danger-icon {
         font-size: 3rem;
         margin-bottom: 24px;
@@ -61,7 +57,6 @@
         line-height: 1.5;
     }
 
-    /* PREVIEW CARD */
     .preview-box {
         background: rgba(0, 0, 0, 0.2);
         border-radius: 16px;
@@ -92,7 +87,6 @@
         color: rgba(255, 255, 255, 0.5);
     }
 
-    /* ACTIONS */
     .actions-stack {
         display: flex;
         flex-direction: column;
@@ -100,7 +94,7 @@
     }
 
     .btn-destroy {
-        background: #ff453a; /* Apple Red */
+        background: #ff453a;
         color: #fff;
         border: none;
         width: 100%;

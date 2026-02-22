@@ -4,8 +4,12 @@
     ViewData["Title"] = Model.FullName;
 }
 
+@using System.Security.Claims
+@{
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+}
+
 <style>
-    /* PROFILE CANVAS */
     .profile-view-container {
         max-width: 800px;
         margin: 0 auto;
@@ -25,7 +29,6 @@
         overflow: hidden;
     }
 
-    /* PROFILE HEADER (Avatar & Name) */
     .profile-header {
         text-align: center;
         margin-bottom: 50px;
@@ -61,7 +64,6 @@
         margin-bottom: 24px;
     }
 
-    /* META PILLS (Email, DOB) */
     .profile-meta-row {
         display: flex;
         justify-content: center;
@@ -81,7 +83,6 @@
         border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    /* BIO SECTION */
     .bio-box {
         text-align: center;
         max-width: 600px;
@@ -101,7 +102,6 @@
         text-align: left;
     }
 
-    /* PUBLICATIONS LIST */
     .publications-wrapper {
         border-top: 1px solid rgba(255, 255, 255, 0.05);
         padding-top: 40px;
@@ -125,11 +125,11 @@
         border: 1px solid transparent;
     }
 
-        .pub-item:hover {
+    .pub-item:hover {
             background: rgba(255, 255, 255, 0.05);
             transform: translateX(4px);
             border-color: rgba(255, 255, 255, 0.05);
-        }
+    }
 
     .pub-title {
         color: #fff;
@@ -151,7 +151,6 @@
         border-radius: 16px;
     }
 
-    /* FOOTER ACTIONS */
     .profile-actions {
         display: flex;
         justify-content: space-between;
@@ -173,10 +172,10 @@
         box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
     }
 
-        .btn-edit-profile:hover {
+    .btn-edit-profile:hover {
             transform: scale(1.05);
             box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
-        }
+    }
 
     .btn-back {
         color: rgba(255, 255, 255, 0.4);
@@ -268,9 +267,12 @@
             <a asp-action="Index" class="btn-back">
                 &larr; All Authors
             </a>
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-edit-profile">
-                Edit Profile
-            </a>
+            @if (Model.UserId == currentUserId || User.IsInRole("Admin"))
+            {
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-edit-profile">
+                    Edit Profile
+                </a>
+            }
         </div>
 
     </div>

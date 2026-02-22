@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace lab1.Models
 {
@@ -6,31 +7,34 @@ namespace lab1.Models
     {
         public int Id { get; set; }
 
-        [Display(Name = "Заголовок статті")]
-        [Required(ErrorMessage = "Поле 'Заголовок' є обов'язковим")]
-        [StringLength(100, MinimumLength = 3, ErrorMessage = "Заголовок має бути від 3 до 100 символів")]
+        [Display(Name = "Title")]
+        [Required(ErrorMessage = "The 'Title' field is required")]
+        [StringLength(100, MinimumLength = 3, ErrorMessage = "The title must be between 3 and 100 characters")]
         public string Title { get; set; }
 
-        [Display(Name = "Текст статті")]
-        [Required(ErrorMessage = "Ви забули написати текст статті")]
-        [DataType(DataType.MultilineText)] // Робить велике поле для вводу
+        [Display(Name = "Content")]
+        [Required(ErrorMessage = "You forgot to write the article content")]
+        [DataType(DataType.MultilineText)]
         public string Content { get; set; }
 
-        [Display(Name = "Дата публікації")]
+        [Display(Name = "Publication Date")]
         [DataType(DataType.Date)]
-        [Required(ErrorMessage = "Вкажіть дату публікації")]
+        [Required(ErrorMessage = "Please specify the publication date")]
         public DateTime PublicationDate { get; set; } = DateTime.Now;
 
-        [Display(Name = "Категорія")]
-        [Required(ErrorMessage = "Вкажіть категорію")]
-        [StringLength(50, ErrorMessage = "Назва категорії не може перевищувати 50 символів")]
+        [Display(Name = "Category")]
+        [Required(ErrorMessage = "Please specify a category")]
+        [StringLength(50, ErrorMessage = "Category name cannot exceed 50 characters")]
         public string Category { get; set; }
 
-        [Display(Name = "Рейтинг")]
-        [Required(ErrorMessage = "Вкажіть рейтинг")]
-        [Range(0, 10, ErrorMessage = "Рейтинг має бути від 0 до 10")]
-        public int Rating { get; set; }
+        [Display(Name = "Rating")]
+        public double Rating { get; set; } = 0.0;
 
+        public ICollection<ArticleRating>? Ratings { get; set; }
+
+        public string? UserId { get; set; }
+        public IdentityUser? User { get; set; }
+        public bool IsDraft { get; set; } = false;
         public ICollection<ArticleAuthor>? ArticleAuthors { get; set; }
     }
 }

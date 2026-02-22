@@ -8,6 +8,10 @@ namespace lab1.Controllers
     {
         public IActionResult Index()
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Articles");
+            }
             return View();
         }
 

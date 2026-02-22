@@ -5,7 +5,6 @@
 }
 
 <style>
-    /* IJournal Editor Styles (Reused & Adapted) */
     .editor-container {
         max-width: 800px;
         margin: 0 auto;
@@ -13,114 +12,132 @@
     }
 
     .glass-canvas {
-        background: rgba(30, 30, 35, 0.4);
-        backdrop-filter: blur(40px) saturate(110%);
-        -webkit-backdrop-filter: blur(40px) saturate(110%);
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        background: rgba(10, 15, 30, 0.45);
+        backdrop-filter: blur(40px) saturate(120%);
+        -webkit-backdrop-filter: blur(40px) saturate(120%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 32px;
         padding: 60px;
         position: relative;
         overflow: hidden;
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.05);
     }
 
     .brand-subtitle {
         text-align: center;
         margin-bottom: 40px;
-        color: rgba(255, 255, 255, 0.4);
-        font-size: 0.9rem;
-        letter-spacing: 0.05em;
+        color: #00ffc8; /* Змінив на акцентний колір */
+        font-size: 0.85rem;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
-        font-weight: 600;
+        font-weight: 700;
     }
 
+    /* --- Заголовок статті --- */
     .input-title {
         width: 100%;
         background: transparent;
         border: none;
         color: #fff;
         font-size: 3rem;
-        font-weight: 700;
+        font-weight: 800;
         letter-spacing: -0.02em;
         padding: 10px 0;
         margin-bottom: 30px;
         line-height: 1.1;
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.3s;
     }
 
         .input-title:focus {
             outline: none;
+            border-bottom: 1px solid rgba(0, 255, 200, 0.3);
         }
 
+    /* --- Сітка для Категорії та Дати (ВИПРАВЛЕНО) --- */
     .meta-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr; /* Дві рівні колонки */
         gap: 30px;
         margin-bottom: 40px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        padding-bottom: 30px;
+        padding-bottom: 40px;
     }
 
-    .input-group-clean label {
+    .input-label {
         display: block;
         font-size: 0.75rem;
-        color: rgba(255, 255, 255, 0.4);
-        margin-bottom: 8px;
-        font-weight: 500;
+        color: rgba(255, 255, 255, 0.5);
+        margin-bottom: 10px;
+        margin-left: 15px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 600;
     }
 
-    .input-clean {
+    /* --- Глибокі Інпути (Загальний стиль) --- */
+    .deep-input {
         width: 100%;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid transparent;
-        border-radius: 12px;
-        color: #fff;
-        padding: 12px 16px;
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
-    }
-
-        .input-clean:focus {
-            background: rgba(255, 255, 255, 0.08);
-            outline: none;
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-    .select-clean {
-        width: 100%;
-        background: rgba(255, 255, 255, 0.03);
-        border: none;
+        padding: 16px 20px;
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.06);
         border-radius: 16px;
-        color: rgba(255, 255, 255, 0.8);
-        padding: 15px;
-        font-size: 0.9rem;
-        min-height: 120px;
+        color: #fff;
+        font-size: 1rem;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
     }
 
-        .select-clean:focus {
+        .deep-input:focus {
             outline: none;
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(10, 25, 60, 0.5);
+            border-color: rgba(0, 255, 200, 0.5);
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.4), 0 0 0 4px rgba(0, 255, 200, 0.15);
         }
 
-        .select-clean option:checked {
-            background: rgba(255, 255, 255, 0.2);
+    /* Специфічно для Select */
+    select.custom-select {
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        background-size: 16px;
+        padding-right: 40px;
+        cursor: pointer;
+    }
+
+        select.custom-select option {
+            background: #0a0f1e;
             color: #fff;
+            padding: 10px;
         }
 
+    /* Fix for date picker icon */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        opacity: 0.5;
+        cursor: pointer;
+    }
+
+    /* Контент статті */
     .textarea-clean {
         width: 100%;
         background: transparent;
         border: none;
         color: rgba(255, 255, 255, 0.9);
-        font-size: 1.1rem;
-        line-height: 1.7;
-        min-height: 300px;
+        font-size: 1.15rem;
+        line-height: 1.8;
+        min-height: 400px;
         resize: vertical;
-        padding: 0;
+        padding: 20px 0;
     }
 
         .textarea-clean:focus {
             outline: none;
         }
 
+    /* --- Кнопки керування (НОВИЙ ДИЗАЙН) --- */
     .actions-wrapper {
         display: flex;
         justify-content: space-between;
@@ -133,12 +150,12 @@
     .btn-cancel {
         color: rgba(255, 255, 255, 0.4);
         text-decoration: none;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         transition: color 0.3s;
     }
 
         .btn-cancel:hover {
-            color: #fff;
+            color: #ff453a; /* Червонуватий відтінок при скасуванні */
         }
 
     .btn-group-right {
@@ -146,60 +163,70 @@
         gap: 16px;
     }
 
-    .btn-secondary-glass {
+    /* Кнопка Draft (Скляна) */
+    .btn-draft {
         background: rgba(255, 255, 255, 0.05);
         color: rgba(255, 255, 255, 0.8);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        padding: 12px 24px;
-        border-radius: 50px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 14px 28px;
+        border-radius: 14px;
         font-weight: 500;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         transition: all 0.3s;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
     }
 
-        .btn-secondary-glass:hover {
+        .btn-draft:hover {
             background: rgba(255, 255, 255, 0.1);
             color: #fff;
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
         }
 
-    .btn-primary-white {
-        background: #ffffff;
-        color: #000000;
-        border: none;
-        padding: 12px 32px;
-        border-radius: 50px;
+    /* Кнопка Publish (Неонова) */
+    .btn-publish {
+        background: rgba(0, 255, 200, 0.15);
+        color: #00ffc8;
+        border: 1px solid rgba(0, 255, 200, 0.4);
+        padding: 14px 32px;
+        border-radius: 14px;
         font-weight: 600;
-        font-size: 0.9rem;
-        box-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
-        transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 15px rgba(0, 255, 200, 0.1);
     }
 
-        .btn-primary-white:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 50px rgba(255, 255, 255, 0.25);
+        .btn-publish:hover {
+            background: rgba(0, 255, 200, 0.3);
+            color: #fff;
+            border-color: #00ffc8;
+            box-shadow: 0 8px 25px rgba(0, 255, 200, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
 
     .status-pill {
         display: inline-flex;
         align-items: center;
-        padding: 6px 16px;
-        background: rgba(255, 214, 10, 0.1);
-        color: #FFD60A;
-        font-size: 0.8rem;
+        padding: 8px 20px;
+        background: rgba(0, 255, 200, 0.1);
+        color: #00ffc8;
+        border: 1px solid rgba(0, 255, 200, 0.2);
+        font-size: 0.9rem;
         border-radius: 20px;
-        margin-bottom: 20px;
+        margin-bottom: 30px;
+        font-weight: 500;
         animation: fadeIn 0.5s ease;
-    }
-
-    input[type="date"] {
-        color-scheme: dark;
     }
 
     .text-danger {
         font-size: 0.8rem;
         color: #ff453a;
-        margin-top: 4px;
+        margin-top: 6px;
         display: block;
+        margin-left: 15px;
     }
 
     @@keyframes fadeInUp {
@@ -213,16 +240,6 @@
             transform: translateY(0);
         }
     }
-
-    @@keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-
-        to {
-            opacity: 1;
-        }
-    }
 </style>
 
 <div class="editor-container py-5">
@@ -230,14 +247,14 @@
     <div class="glass-canvas">
 
         <div class="brand-subtitle">
-            Editing Mode
+            Editing Workspace
         </div>
 
         @if (TempData["Message"] != null)
         {
             <div style="text-align: center;">
                 <div class="status-pill">
-                    ✨ @TempData["Message"]
+                    ✓ @TempData["Message"]
                 </div>
             </div>
         }
@@ -252,30 +269,31 @@
             </div>
 
             <div class="meta-grid">
-                <div class="input-group-clean">
-                    <label>Category</label>
-                    <input asp-for="Category" class="input-clean" placeholder="Design, Life..." />
+                <div>
+                    <label asp-for="Category" class="input-label"></label>
+                    <select asp-for="Category" class="deep-input custom-select" required>
+                        <option value="">-- Choose a Category --</option>
+                        <option value="Machine Learning">Machine Learning</option>
+                        <option value="Data Engineering">Data Engineering</option>
+                        <option value="Natural Language Processing">Natural Language Processing</option>
+                        <option value="Computer Vision">Computer Vision</option>
+                        <option value="Software Development">Software Development</option>
+                        <option value="Design & UI/UX">Design & UI/UX</option>
+                        <option value="Life & Productivity">Life & Productivity</option>
+                        <option value="Other">Other</option>
+                    </select>
                     <span asp-validation-for="Category" class="text-danger"></span>
                 </div>
-                <div class="input-group-clean">
-                    <label>Rating (0-10)</label>
-                    <input asp-for="Rating" class="input-clean" type="number" min="0" max="10" />
-                    <span asp-validation-for="Rating" class="text-danger"></span>
-                </div>
-                <div class="input-group-clean">
-                    <label>Date</label>
-                    <input asp-for="PublicationDate" class="input-clean" type="date" />
+
+                <div>
+                    <label asp-for="PublicationDate" class="input-label">Date</label>
+                    <input asp-for="PublicationDate" class="deep-input" type="date" asp-format="{0:yyyy-MM-dd}" />
                     <span asp-validation-for="PublicationDate" class="text-danger"></span>
                 </div>
             </div>
 
-            <div style="margin-bottom: 40px;">
-                <label style="display: block; font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-bottom: 10px;">AUTHORS</label>
-                <select name="selectedAuthors" class="select-clean" multiple asp-items="ViewBag.AuthorsList"></select>
-            </div>
-
             <div>
-                <textarea asp-for="Content" class="textarea-clean" placeholder="Refine your thoughts..."></textarea>
+                <textarea asp-for="Content" class="textarea-clean" placeholder="Refine your thoughts here..."></textarea>
                 <span asp-validation-for="Content" class="text-danger"></span>
             </div>
 
@@ -283,12 +301,12 @@
                 <a asp-action="Index" class="btn-cancel">Discard Changes</a>
 
                 <div class="btn-group-right">
-                    <button type="submit" name="action" value="Draft" class="btn-secondary-glass">
-                        Save to Session
+                    <button type="submit" name="action" value="Draft" class="btn-draft">
+                        Save as Draft
                     </button>
 
-                    <button type="submit" name="action" value="Publish" class="btn-primary-white">
-                        Commit Changes
+                    <button type="submit" name="action" value="Publish" class="btn-publish">
+                        Update & Publish
                     </button>
                 </div>
             </div>

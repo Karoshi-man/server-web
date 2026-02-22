@@ -1,0 +1,386 @@
+﻿@model lab1.Models.Author
+@{
+    ViewData["Title"] = "Author Cabinet";
+}
+
+<style>
+    .btn-edit-profile {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 8px 20px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.8);
+        border-radius: 50px;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        width: 100%;
+        text-align: center;
+    }
+
+        .btn-edit-profile:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+    .cabinet-layout {
+        max-width: 1200px;
+        margin: 40px auto;
+        animation: fadeIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        gap: 40px;
+        align-items: start;
+    }
+
+    /* --- Скляні блоки --- */
+    .glass-box {
+        background: rgba(10, 15, 30, 0.4);
+        backdrop-filter: blur(40px) saturate(120%);
+        -webkit-backdrop-filter: blur(40px) saturate(120%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255,255,255,0.05);
+    }
+
+    .section-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 24px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* --- Профіль (Ліва колонка) --- */
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(0, 113, 227, 0.4), rgba(0, 255, 200, 0.2));
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        box-shadow: 0 0 30px rgba(0, 113, 227, 0.2);
+    }
+
+    .action-link {
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .edit-link {
+        color: rgba(255, 255, 255, 0.4);
+    }
+
+        .edit-link:hover {
+            color: #8ab4f8;
+        }
+
+    .delete-link {
+        color: rgba(255, 69, 58, 0.4);
+    }
+
+        .delete-link:hover {
+            color: #ff453a;
+        }
+
+    .profile-name {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .profile-email {
+        color: #00ffc8;
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+        font-weight: 500;
+    }
+
+    .profile-bio {
+        font-size: 0.95rem;
+        color: rgba(255, 255, 255, 0.6);
+        line-height: 1.6;
+    }
+
+    /* --- Картки статей --- */
+    .article-row {
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+
+        .article-row:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+    .article-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 15px;
+    }
+
+    .article-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #fff;
+        text-decoration: none;
+    }
+
+        .article-title:hover {
+            color: #8ab4f8;
+        }
+
+    /* --- Форма запрошення (Inline) --- */
+    .invite-form {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .invite-input {
+        flex: 1;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 10px 15px;
+        color: #fff;
+        font-size: 0.9rem;
+    }
+
+        .invite-input:focus {
+            outline: none;
+            border-color: #00ffc8;
+            background: rgba(0, 20, 40, 0.6);
+        }
+
+    .btn-invite {
+        background: rgba(0, 113, 227, 0.2);
+        color: #fff;
+        border: 1px solid rgba(100, 170, 255, 0.4);
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .btn-invite:hover {
+            background: rgba(0, 113, 227, 0.4);
+            border-color: #fff;
+        }
+
+    /* --- Запрошення (Вхідні) --- */
+    .invite-alert {
+        background: linear-gradient(135deg, rgba(255, 214, 10, 0.1), rgba(255, 69, 58, 0.05));
+        border: 1px solid rgba(255, 214, 10, 0.3);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .invite-text strong {
+        color: #FFD60A;
+    }
+
+    .invite-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .btn-accept {
+        background: #00ffc8;
+        color: #000;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .btn-accept:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 255, 200, 0.4);
+        }
+
+    .btn-decline {
+        background: transparent;
+        color: #ff453a;
+        border: 1px solid rgba(255, 69, 58, 0.4);
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .btn-decline:hover {
+            background: rgba(255, 69, 58, 0.1);
+            border-color: #ff453a;
+        }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width: 900px) {
+        .cabinet-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .invite-alert {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .invite-actions {
+            width: 100%;
+            justify-content: flex-end;
+        }
+    }
+</style>
+
+<div class="cabinet-layout">
+
+    <div class="glass-box">
+        <div class="profile-avatar">
+            @if (!string.IsNullOrEmpty(Model.FullName))
+            {
+                @Model.FullName.Substring(0, 1).ToUpper()
+            }
+            else
+            {
+                <text>U</text>
+            }
+        </div>
+        <h1 class="profile-name">@Model.FullName</h1>
+        <div class="profile-email">@Model.Email</div>
+        @if (!string.IsNullOrEmpty(Model.Nickname))
+        {
+            <div style="margin-bottom: 15px; color: rgba(255,255,255,0.4);">Alias: @Model.Nickname</div>
+        }
+        <p class="profile-bio">@Model.Bio</p>
+
+        <a asp-action="EditProfile" class="btn-edit-profile">Edit Profile Settings</a>
+    </div>
+
+    <div class="workspace-area">
+
+        @if (TempData["Message"] != null)
+        {
+            <div style="color: #00ffc8; margin-bottom: 20px; font-weight: 500; background: rgba(0, 255, 200, 0.1); padding: 12px 20px; border-radius: 12px; border: 1px solid rgba(0, 255, 200, 0.2);">
+                ✓ @TempData["Message"]
+            </div>
+        }
+
+        @if (ViewBag.Invitations != null && ((IEnumerable<lab1.Models.CoAuthorInvitation>)ViewBag.Invitations).Any())
+        {
+            <div class="glass-box" style="margin-bottom: 40px; border-color: rgba(255, 214, 10, 0.3);">
+                <h2 class="section-title" style="color: #FFD60A;">Action Required</h2>
+
+                @foreach (var invite in (IEnumerable<lab1.Models.CoAuthorInvitation>)ViewBag.Invitations)
+                {
+                    <div class="invite-alert">
+                        <div class="invite-text">
+                            You have been invited by <strong>@invite.Inviter?.Email</strong> to co-author <br>
+                            <em>"@invite.Article?.Title"</em>
+                        </div>
+
+                        <div class="invite-actions">
+                            <form asp-controller="Cabinet" asp-action="AcceptInvite" method="post">
+                                <input type="hidden" name="inviteId" value="@invite.Id" />
+                                <button type="submit" class="btn-accept">Accept</button>
+                            </form>
+
+                            <form asp-controller="Cabinet" asp-action="DeclineInvite" method="post" id="declineForm_@invite.Id">
+                                <input type="hidden" name="inviteId" value="@invite.Id" />
+                                <button type="button" class="btn-decline" onclick="confirmDecline(@invite.Id)">Decline</button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <div class="glass-box">
+            <h2 class="section-title">
+                My Publications
+                <div style="margin-left: auto; display: flex; gap: 15px;">
+                    <a asp-action="Drafts" style="font-size: 0.9rem; color: #FFD60A; text-decoration: none;">📝 My Drafts</a>
+                    <a asp-controller="Articles" asp-action="Create" style="font-size: 0.9rem; color: #8ab4f8; text-decoration: none;">+ New Article</a>
+                </div>
+            </h2>
+
+            @if (ViewBag.MyArticles != null && ((IEnumerable<lab1.Models.Article>)ViewBag.MyArticles).Any())
+            {
+                foreach (var article in (IEnumerable<lab1.Models.Article>)ViewBag.MyArticles)
+                {
+                    <div class="article-row">
+                        <div class="article-header">
+                            <div>
+                                <a asp-controller="Articles" asp-action="Details" asp-route-id="@article.Id" class="article-title">@article.Title</a>
+                                <div style="font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-top: 5px;">@article.Category</div>
+                            </div>
+
+                            <div style="display: flex; gap: 15px; align-items: center;">
+                                <a asp-controller="Articles" asp-action="Edit" asp-route-id="@article.Id" class="action-link edit-link">✎ Edit</a>
+                                <a asp-controller="Articles" asp-action="Delete" asp-route-id="@article.Id" class="action-link delete-link">✕ Delete</a>
+                            </div>
+                        </div>
+
+                        <form asp-controller="Cabinet" asp-action="SendInvite" method="post" class="invite-form">
+                            <input type="hidden" name="articleId" value="@article.Id" />
+                            <input type="email" name="inviteeEmail" class="invite-input" placeholder="Add co-author by email..." required />
+                            <button type="submit" class="btn-invite">Invite</button>
+                        </form>
+                    </div>
+                }
+            }
+            else
+            {
+                <p style="color: rgba(255,255,255,0.4); font-size: 0.95rem;">You haven't published any articles yet. Start crafting your legacy.</p>
+            }
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function confirmDecline(inviteId) {
+        if (confirm("Are you sure you want to decline this co-author invitation?")) {
+            document.getElementById('declineForm_' + inviteId).submit();
+        }
+    }
+</script>

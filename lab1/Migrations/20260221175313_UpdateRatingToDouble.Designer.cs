@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using lab1.Data;
 
@@ -11,9 +12,11 @@ using lab1.Data;
 namespace lab1.Migrations
 {
     [DbContext(typeof(JournalContext))]
-    partial class JournalContextModelSnapshot : ModelSnapshot
+    [Migration("20260221175313_UpdateRatingToDouble")]
+    partial class UpdateRatingToDouble
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -334,9 +337,6 @@ namespace lab1.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<double>("Rating")
-                        .HasColumnType("float");
-
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
@@ -345,31 +345,6 @@ namespace lab1.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Authors");
-                });
-
-            modelBuilder.Entity("lab1.Models.AuthorRating", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AuthorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Score")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AuthorId");
-
-                    b.ToTable("AuthorRatings");
                 });
 
             modelBuilder.Entity("lab1.Models.CoAuthorInvitation", b =>
@@ -505,17 +480,6 @@ namespace lab1.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("lab1.Models.AuthorRating", b =>
-                {
-                    b.HasOne("lab1.Models.Author", "Author")
-                        .WithMany("Ratings")
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Author");
-                });
-
             modelBuilder.Entity("lab1.Models.CoAuthorInvitation", b =>
                 {
                     b.HasOne("lab1.Models.Article", "Article")
@@ -545,8 +509,6 @@ namespace lab1.Migrations
             modelBuilder.Entity("lab1.Models.Author", b =>
                 {
                     b.Navigation("ArticleAuthors");
-
-                    b.Navigation("Ratings");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,11 +1,17 @@
 ﻿using lab1.Data;
 using lab1.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using System;
 
 namespace lab1.Controllers
 {
+    [Authorize]
     public class ArticlesController : Controller
     {
         private readonly JournalContext _context;
@@ -16,232 +22,305 @@ namespace lab1.Controllers
         }
 
         // GET: Articles
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string category, string sortBy)
         {
-            return View(await _context.Articles.ToListAsync());
+            var query = _context.Articles
+                .Include(a => a.User)
+                .Include(a => a.ArticleAuthors).ThenInclude(aa => aa.Author)
+                .Where(a => !a.IsDraft)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(category) && category != "All")
+            {
+                query = query.Where(a => a.Category == category);
+            }
+
+            switch (sortBy)
+            {
+                case "rating":
+                    query = query.OrderByDescending(a => a.Rating);
+                    break;
+                case "top_author":
+                    query = query.OrderByDescending(a => a.ArticleAuthors.Max(aa => aa.Author.Rating));
+                    break;
+                case "oldest":
+                    query = query.OrderBy(a => a.PublicationDate);
+                    break;
+                case "newest":
+                default:
+                    query = query.OrderByDescending(a => a.PublicationDate);
+                    break;
+            }
+
+            // Передаємо список унікальних категорій у View для випадаючого списку
+            ViewBag.Categories = await _context.Articles
+                .Where(a => !a.IsDraft)
+                .Select(a => a.Category)
+                .Distinct()
+                .ToListAsync();
+
+            ViewBag.CurrentCategory = category;
+            ViewBag.CurrentSort = sortBy;
+
+            return View(await query.ToListAsync());
         }
 
         // GET: Articles/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
+
             var article = await _context.Articles
                 .Include(a => a.ArticleAuthors).ThenInclude(aa => aa.Author)
+                .Include(a => a.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (article == null) return NotFound();
             return View(article);
         }
 
-
-        public IActionResult Create()
+        // GET: Articles/Create
+        public async Task<IActionResult> Create()
         {
-            // 1. Відновлюємо дані з сесії (прості рядки - це надійно)
-            var draftTitle = HttpContext.Session.GetString("Draft_Create_Title");
-            var draftContent = HttpContext.Session.GetString("Draft_Create_Content");
-            var draftCategory = HttpContext.Session.GetString("Draft_Create_Category");
-            // Можна додати й інші поля за аналогією
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentAuthor = await _context.Authors.FirstOrDefaultAsync(a => a.UserId == currentUserId);
 
-            var article = new Article();
-
-            // Якщо в сесії щось є - заповнюємо форму
-            if (!string.IsNullOrEmpty(draftTitle) || !string.IsNullOrEmpty(draftContent))
+            if (currentAuthor == null)
             {
-                article.Title = draftTitle;
-                article.Content = draftContent;
-                article.Category = draftCategory;
-                // Додаємо повідомлення, щоб користувач бачив, що це чернетка
-                TempData["Message"] = "Restored unpreserved draft";
+                TempData["Message"] = "To publish articles, please initialize your Author Profile first.";
+                return RedirectToAction("Index", "Cabinet");
             }
-            else
-            {
-                article.PublicationDate = DateTime.Now;
-            }
-
-            ViewData["AuthorsList"] = new MultiSelectList(_context.Authors, "Id", "FullName");
-            return View(article);
+            return View(new Article { PublicationDate = DateTime.Now });
         }
 
+        // POST: Articles/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Article article, int[] selectedAuthors, string action)
+        public async Task<IActionResult> Create(Article article, string action)
         {
-            // 1. ПРИМУСОВО ЗБЕРІГАЄМО В СЕСІЮ (спочатку, прості рядки)
-            HttpContext.Session.SetString("Draft_Create_Title", article.Title ?? "");
-            HttpContext.Session.SetString("Draft_Create_Content", article.Content ?? "");
-            HttpContext.Session.SetString("Draft_Create_Category", article.Category ?? "");
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentAuthor = await _context.Authors.FirstOrDefaultAsync(a => a.UserId == currentUserId);
 
-            // 2. ЛОГІКА КНОПОК
+            if (currentAuthor == null) return RedirectToAction("Index", "Cabinet");
 
-            // Якщо натиснули "Зберегти чернетку"
-            if (action == "Draft")
+            article.UserId = currentUserId;
+
+            article.IsDraft = (action == "Draft");
+
+            ModelState.Remove("UserId");
+            ModelState.Remove("User");
+            ModelState.Remove("ArticleAuthors");
+
+            if (ModelState.IsValid)
             {
-                TempData["Message"] = "Saved";
-                // Повертаємо ту саму сторінку, дані підтягнуться з моделі article
-                ViewData["AuthorsList"] = new MultiSelectList(_context.Authors, "Id", "FullName", selectedAuthors);
-                return View(article);
-            }
-
-            // Якщо натиснули "Опублікувати"
-            if (action == "Publish")
-            {
-                if (ModelState.IsValid)
+                article.ArticleAuthors = new List<ArticleAuthor>
                 {
-                    // Додаємо авторів
-                    if (selectedAuthors != null)
-                    {
-                        article.ArticleAuthors = new List<ArticleAuthor>();
-                        foreach (var id in selectedAuthors)
-                        {
-                            article.ArticleAuthors.Add(new ArticleAuthor { AuthorId = id, Article = article });
-                        }
-                    }
+                    new ArticleAuthor { AuthorId = currentAuthor.Id, Article = article }
+                };
 
-                    _context.Add(article);
-                    await _context.SaveChangesAsync();
+                _context.Add(article);
+                await _context.SaveChangesAsync();
 
-                    // ОЧИЩАЄМО СЕСІЮ (видаляємо ключі)
-                    HttpContext.Session.Remove("Draft_Create_Title");
-                    HttpContext.Session.Remove("Draft_Create_Content");
-                    HttpContext.Session.Remove("Draft_Create_Category");
-
-                    return RedirectToAction(nameof(Index));
+                if (article.IsDraft)
+                {
+                    TempData["Message"] = "Draft saved successfully to your workspace.";
+                    return RedirectToAction("Drafts", "Cabinet");
                 }
+
+                return RedirectToAction(nameof(Index));
             }
 
-            // Якщо помилка валідації або щось пішло не так
-            ViewData["AuthorsList"] = new MultiSelectList(_context.Authors, "Id", "FullName", selectedAuthors);
             return View(article);
         }
 
-
+        // GET: Articles/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
 
-            // Ключі унікальні для кожної статті (по ID)
-            string keyTitle = $"Draft_Edit_{id}_Title";
-            string keyContent = $"Draft_Edit_{id}_Content";
-
-            // 1. Перевіряємо сесію
-            var draftTitle = HttpContext.Session.GetString(keyTitle);
-            var draftContent = HttpContext.Session.GetString(keyContent);
-
-            Article articleToEdit;
-
-            if (!string.IsNullOrEmpty(draftTitle))
-            {
-                // Є чернетка -> беремо оригінал з БД для ID, але текст замінюємо з сесії
-                articleToEdit = await _context.Articles
+            var articleToEdit = await _context.Articles
                     .Include(a => a.ArticleAuthors)
                     .FirstOrDefaultAsync(m => m.Id == id);
-
-                if (articleToEdit != null)
-                {
-                    articleToEdit.Title = draftTitle;
-                    articleToEdit.Content = draftContent;
-                    TempData["Message"] = "You are editing a saved draft";
-                }
-            }
-            else
-            {
-                // Немає чернетки -> беремо чисті дані з БД
-                articleToEdit = await _context.Articles
-                    .Include(a => a.ArticleAuthors)
-                    .FirstOrDefaultAsync(m => m.Id == id);
-
-                // Одразу ініціалізуємо сесію поточними даними
-                if (articleToEdit != null)
-                {
-                    HttpContext.Session.SetString(keyTitle, articleToEdit.Title ?? "");
-                    HttpContext.Session.SetString(keyContent, articleToEdit.Content ?? "");
-                }
-            }
 
             if (articleToEdit == null) return NotFound();
 
-            var selectedIds = articleToEdit.ArticleAuthors?.Select(x => x.AuthorId).ToArray();
-            ViewData["AuthorsList"] = new MultiSelectList(_context.Authors, "Id", "FullName", selectedIds);
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentAuthor = await _context.Authors.FirstOrDefaultAsync(a => a.UserId == currentUserId);
+
+            bool isOwner = articleToEdit.UserId == currentUserId;
+            bool isAdmin = User.IsInRole("Admin");
+            bool isCoAuthor = currentAuthor != null && articleToEdit.ArticleAuthors.Any(aa => aa.AuthorId == currentAuthor.Id);
+
+            if (!isOwner && !isAdmin && !isCoAuthor)
+            {
+                return Forbid();
+            }
+
             return View(articleToEdit);
         }
 
+        // POST: Articles/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Article article, int[] selectedAuthors, string action)
+        public async Task<IActionResult> Edit(int id, Article article, string action)
         {
             if (id != article.Id) return NotFound();
 
-            string keyTitle = $"Draft_Edit_{id}_Title";
-            string keyContent = $"Draft_Edit_{id}_Content";
+            var originalArticle = await _context.Articles
+                .Include(a => a.ArticleAuthors)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(a => a.Id == id);
 
-            // 1. Оновлюємо сесію при будь-якій дії
-            HttpContext.Session.SetString(keyTitle, article.Title ?? "");
-            HttpContext.Session.SetString(keyContent, article.Content ?? "");
+            if (originalArticle == null) return NotFound();
 
-            if (action == "Draft")
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentAuthor = await _context.Authors.FirstOrDefaultAsync(a => a.UserId == currentUserId);
+
+            bool isOwner = originalArticle.UserId == currentUserId;
+            bool isAdmin = User.IsInRole("Admin");
+            bool isCoAuthor = currentAuthor != null && originalArticle.ArticleAuthors.Any(aa => aa.AuthorId == currentAuthor.Id);
+
+            if (!isOwner && !isAdmin && !isCoAuthor)
             {
-                TempData["Message"] = "Зміни збережено в сесії (БД не змінено)";
-                ViewData["AuthorsList"] = new MultiSelectList(_context.Authors, "Id", "FullName", selectedAuthors);
-                return View(article);
+                return Forbid();
             }
 
-            if (action == "Publish")
+            article.UserId = originalArticle.UserId;
+
+            ModelState.Remove("UserId");
+            ModelState.Remove("User");
+            ModelState.Remove("ArticleAuthors");
+
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
+                try
                 {
-                    try
+                    var existing = await _context.Articles.FirstOrDefaultAsync(a => a.Id == id);
+
+                    if (existing != null)
                     {
-                        _context.Update(article);
+                        existing.Title = article.Title;
+                        existing.Content = article.Content;
+                        existing.Category = article.Category;
+                        existing.PublicationDate = article.PublicationDate;
 
-                        // Оновлення авторів
-                        var existing = await _context.Articles.Include(a => a.ArticleAuthors).FirstOrDefaultAsync(a => a.Id == id);
-                        if (existing != null)
-                        {
-                            _context.ArticleAuthors.RemoveRange(existing.ArticleAuthors);
-                            if (selectedAuthors != null)
-                            {
-                                foreach (var authId in selectedAuthors)
-                                {
-                                    _context.ArticleAuthors.Add(new ArticleAuthor { ArticleId = id, AuthorId = authId });
-                                }
-                            }
-                        }
-
-                        await _context.SaveChangesAsync();
-
-                        // Чистимо сесію
-                        HttpContext.Session.Remove(keyTitle);
-                        HttpContext.Session.Remove(keyContent);
+                        existing.IsDraft = (action == "Draft");
                     }
-                    catch (DbUpdateConcurrencyException)
+
+                    await _context.SaveChangesAsync();
+
+                    if (action == "Draft")
                     {
-                        if (!ArticleExists(article.Id)) return NotFound();
-                        throw;
+                        TempData["Message"] = "Draft updated successfully.";
+                        return RedirectToAction("Drafts", "Cabinet");
                     }
-                    return RedirectToAction(nameof(Index));
+                    else
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ArticleExists(article.Id)) return NotFound();
+                    throw;
                 }
             }
 
-            ViewData["AuthorsList"] = new MultiSelectList(_context.Authors, "Id", "FullName", selectedAuthors);
             return View(article);
         }
 
-        // Delete (без змін)
+        // GET: Articles/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
+
             var article = await _context.Articles.FirstOrDefaultAsync(m => m.Id == id);
             if (article == null) return NotFound();
+
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (article.UserId != currentUserId && !User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
             return View(article);
         }
 
+        // POST: Articles/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var article = await _context.Articles.FindAsync(id);
-            if (article != null) _context.Articles.Remove(article);
-            await _context.SaveChangesAsync();
+            var article = await _context.Articles
+                .Include(a => a.ArticleAuthors)
+                .FirstOrDefaultAsync(a => a.Id == id);
+
+            if (article != null)
+            {
+                var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (article.UserId != currentUserId && !User.IsInRole("Admin"))
+                {
+                    return Forbid();
+                }
+
+                var invitations = _context.CoAuthorInvitations.Where(i => i.ArticleId == id);
+                if (invitations.Any())
+                {
+                    _context.CoAuthorInvitations.RemoveRange(invitations);
+                }
+
+                if (article.ArticleAuthors != null && article.ArticleAuthors.Any())
+                {
+                    _context.ArticleAuthors.RemoveRange(article.ArticleAuthors);
+                }
+
+                _context.Articles.Remove(article);
+                await _context.SaveChangesAsync();
+            }
             return RedirectToAction(nameof(Index));
+        }
+
+        // POST: Голосування за статтю
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RateArticle(int articleId, int score)
+        {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var article = await _context.Articles.Include(a => a.Ratings).FirstOrDefaultAsync(a => a.Id == articleId);
+
+            if (article == null) return NotFound();
+
+            if (article.UserId == currentUserId)
+            {
+                TempData["Message"] = "You cannot rate your own article.";
+                return RedirectToAction(nameof(Details), new { id = articleId });
+            }
+
+            var existingRating = await _context.ArticleRatings
+                .FirstOrDefaultAsync(r => r.ArticleId == articleId && r.UserId == currentUserId);
+
+            if (existingRating != null)
+            {
+                existingRating.Score = score;
+            }
+            else
+            {
+                _context.ArticleRatings.Add(new ArticleRating
+                {
+                    ArticleId = articleId,
+                    UserId = currentUserId,
+                    Score = score
+                });
+            }
+            await _context.SaveChangesAsync();
+
+            var allRatings = await _context.ArticleRatings.Where(r => r.ArticleId == articleId).ToListAsync();
+            article.Rating = Math.Round(allRatings.Average(r => (double)r.Score), 1);
+
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = "Thank you! Your rating has been saved";
+            return RedirectToAction(nameof(Details), new { id = articleId });
         }
 
         private bool ArticleExists(int id) => _context.Articles.Any(e => e.Id == id);

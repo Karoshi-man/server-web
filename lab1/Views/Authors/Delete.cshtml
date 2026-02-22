@@ -5,7 +5,6 @@
 }
 
 <style>
-    /* DELETE CONTAINER */
     .delete-profile-wrapper {
         max-width: 500px;
         margin: 0 auto;
@@ -13,9 +12,8 @@
         animation: shakeIn 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
     }
 
-    /* DANGER GLASS */
     .glass-danger-profile {
-        background: rgba(40, 10, 10, 0.7); /* Deep red tint */
+        background: rgba(40, 10, 10, 0.7);
         backdrop-filter: blur(40px) saturate(120%);
         -webkit-backdrop-filter: blur(40px) saturate(120%);
         border: 1px solid rgba(255, 69, 58, 0.2);
@@ -27,7 +25,6 @@
         overflow: hidden;
     }
 
-    /* GHOST AVATAR ANIMATION */
     .avatar-ghost {
         width: 120px;
         height: 120px;
@@ -38,7 +35,6 @@
         justify-content: center;
         font-size: 3rem;
         font-weight: 700;
-        /* Danger Styles */
         background: rgba(255, 69, 58, 0.1);
         color: #ff453a;
         border: 2px solid #ff453a;
@@ -46,7 +42,6 @@
         animation: pulseRed 2s infinite;
     }
 
-    /* TYPOGRAPHY */
     .delete-title {
         font-size: 2rem;
         font-weight: 700;
@@ -61,7 +56,6 @@
         line-height: 1.5;
     }
 
-    /* TARGET CARD */
     .target-card {
         background: rgba(0, 0, 0, 0.3);
         border-radius: 20px;
@@ -83,7 +77,6 @@
         font-size: 0.9rem;
     }
 
-    /* ACTIONS */
     .actions-stack {
         display: flex;
         flex-direction: column;
@@ -104,10 +97,10 @@
         box-shadow: 0 10px 30px rgba(255, 69, 58, 0.3);
     }
 
-        .btn-destroy:hover {
+    .btn-destroy:hover {
             transform: scale(1.02);
             box-shadow: 0 15px 40px rgba(255, 69, 58, 0.4);
-        }
+    }
 
     .btn-cancel {
         color: rgba(255, 255, 255, 0.4);
@@ -117,9 +110,9 @@
         transition: color 0.2s;
     }
 
-        .btn-cancel:hover {
+    .btn-cancel:hover {
             color: #fff;
-        }
+    }
 
     @@keyframes pulseRed {
         0% {

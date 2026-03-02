@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
 namespace lab1.Models
@@ -7,34 +9,40 @@ namespace lab1.Models
     {
         public int Id { get; set; }
 
+        public string? UserId { get; set; }
+
+        public IdentityUser? User { get; set; }
+
         [Display(Name = "Title")]
-        [Required(ErrorMessage = "The 'Title' field is required")]
-        [StringLength(100, MinimumLength = 3, ErrorMessage = "The title must be between 3 and 100 characters")]
+        [Required(ErrorMessage = "Title is required.")]
+        [StringLength(150, MinimumLength = 5, ErrorMessage = "Title must be between 5 and 150 characters.")]
         public string Title { get; set; }
 
         [Display(Name = "Content")]
-        [Required(ErrorMessage = "You forgot to write the article content")]
+        [Required(ErrorMessage = "Content cannot be empty.")]
+        [MinLength(50, ErrorMessage = "Article content is too short. Please write at least 50 characters.")]
         [DataType(DataType.MultilineText)]
         public string Content { get; set; }
 
-        [Display(Name = "Publication Date")]
-        [DataType(DataType.Date)]
-        [Required(ErrorMessage = "Please specify the publication date")]
-        public DateTime PublicationDate { get; set; } = DateTime.Now;
-
         [Display(Name = "Category")]
-        [Required(ErrorMessage = "Please specify a category")]
-        [StringLength(50, ErrorMessage = "Category name cannot exceed 50 characters")]
+        [Required(ErrorMessage = "Please select a category.")]
+        [StringLength(50)]
         public string Category { get; set; }
 
-        [Display(Name = "Rating")]
+        [Display(Name = "Publication Date")]
+        [DataType(DataType.Date)]
+        public DateTime PublicationDate { get; set; }
+
+        [Display(Name = "Article Rating")]
+        [Range(0, 10, ErrorMessage = "Rating must be between 0 and 10.")]
         public double Rating { get; set; } = 0.0;
+        public bool IsDeleted { get; set; } = false;
 
-        public ICollection<ArticleRating>? Ratings { get; set; }
-
-        public string? UserId { get; set; }
-        public IdentityUser? User { get; set; }
+        [Display(Name = "Deleted At")]
+        public DateTime? DeletedAt { get; set; }
         public bool IsDraft { get; set; } = false;
-        public ICollection<ArticleAuthor>? ArticleAuthors { get; set; }
+        public virtual ICollection<ArticleAuthor> ArticleAuthors { get; set; } = new List<ArticleAuthor>();
+        public virtual ICollection<ArticleRating> Ratings { get; set; } = new List<ArticleRating>();
+        public virtual ICollection<CoAuthorInvitation> Invitations { get; set; } = new List<CoAuthorInvitation>();
     }
 }

@@ -7,10 +7,12 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
+using Microsoft.AspNetCore.SignalR;
+using lab1.Hubs;
 
 namespace lab1.Controllers
 {
-    [Authorize] // Доступ тільки для зареєстрованих
+    [Authorize]
     public class CabinetController : Controller
     {
         private readonly JournalContext _context;
@@ -18,6 +20,13 @@ namespace lab1.Controllers
         public CabinetController(JournalContext context)
         {
             _context = context;
+        }
+        public class ContactInfo
+        {
+            public Author Author { get; set; }
+            public ChatMessage LastMessage { get; set; }
+            public int UnreadCount { get; set; }
+            public DateTime Timestamp { get; set; }
         }
 
         // Головна сторінка кабінету
@@ -268,18 +277,83 @@ namespace lab1.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Перевірка безпеки
             if (invitation.InviteeEmail.ToLower() != currentAuthor.Email.ToLower())
             {
                 return Forbid();
             }
 
-            // Оновлюємо статус
             invitation.Status = InvitationStatus.Declined;
             await _context.SaveChangesAsync();
 
             TempData["Message"] = $"You have declined the invitation to co-author '{invitation.Article?.Title}'.";
             return RedirectToAction(nameof(Index));
+        }
+
+
+        // GET: Cabinet/Messages
+        public async Task<IActionResult> Messages(int? id)
+        {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentAuthor = await _context.Authors.FirstOrDefaultAsync(a => a.UserId == currentUserId);
+            if (currentAuthor == null) return RedirectToAction(nameof(InitializeProfile));
+
+            if (id.HasValue)
+            {
+                var unreadMsgs = await _context.ChatMessages
+                    .Where(m => m.SenderId == id.Value && m.ReceiverId == currentAuthor.Id && !m.IsRead)
+                    .ToListAsync();
+
+                if (unreadMsgs.Any())
+                {
+                    foreach (var msg in unreadMsgs) msg.IsRead = true;
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            var allAuthors = await _context.Authors.Where(a => a.Id != currentAuthor.Id).ToListAsync();
+            var contactsInfo = new List<ContactInfo>();
+
+            foreach (var author in allAuthors)
+            {
+                var lastMsg = await _context.ChatMessages
+                    .Where(c => (c.SenderId == currentAuthor.Id && c.ReceiverId == author.Id) ||
+                                (c.SenderId == author.Id && c.ReceiverId == currentAuthor.Id))
+                    .OrderByDescending(c => c.SentAt).FirstOrDefaultAsync();
+
+                var unreadCount = await _context.ChatMessages
+                    .CountAsync(c => c.SenderId == author.Id && c.ReceiverId == currentAuthor.Id && !c.IsRead);
+
+                contactsInfo.Add(new ContactInfo
+                {
+                    Author = author,
+                    LastMessage = lastMsg,
+                    UnreadCount = unreadCount,
+                    Timestamp = lastMsg?.SentAt ?? DateTime.MinValue
+                });
+            }
+
+            ViewBag.Contacts = contactsInfo.OrderByDescending(c => c.Timestamp).ToList();
+            ViewBag.CurrentAuthorName = currentAuthor.FullName;
+            ViewBag.CurrentAuthorId = currentAuthor.Id;
+
+            if (id.HasValue)
+            {
+                var receiver = await _context.Authors.FindAsync(id);
+                if (receiver != null)
+                {
+                    ViewBag.ReceiverId = receiver.Id;
+                    ViewBag.ReceiverName = receiver.FullName;
+                    ViewBag.ReceiverUserId = receiver.UserId;
+
+                    var chatHistory = await _context.ChatMessages
+                        .Include(c => c.Sender)
+                        .Where(c => (c.SenderId == currentAuthor.Id && c.ReceiverId == receiver.Id) ||
+                                    (c.SenderId == receiver.Id && c.ReceiverId == currentAuthor.Id))
+                        .OrderBy(c => c.SentAt).ToListAsync();
+                    ViewBag.ChatHistory = chatHistory;
+                }
+            }
+            return View();
         }
     }
 }

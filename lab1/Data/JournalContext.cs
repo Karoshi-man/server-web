@@ -15,12 +15,14 @@ namespace lab1.Data
         public DbSet<AuthorRating> AuthorRatings { get; set; }
         public DbSet<ArticleAuthor> ArticleAuthors { get; set; }
         public DbSet<ArticleRating> ArticleRatings { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
         public DbSet<CoAuthorInvitation> CoAuthorInvitations { get; set; }
        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
             // Many-to-Many
             modelBuilder.Entity<ArticleAuthor>()
                 .HasKey(aa => new { aa.AuthorId, aa.ArticleId });
@@ -34,6 +36,23 @@ namespace lab1.Data
                 .HasOne(aa => aa.Author)
                 .WithMany(a => a.ArticleAuthors)
                 .HasForeignKey(aa => aa.AuthorId);
+
+            modelBuilder.Entity<ChatMessage>()
+                .HasOne(m => m.Sender)
+                .WithMany()
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ChatMessage>()
+                .HasOne(m => m.Receiver)
+                .WithMany()
+                .HasForeignKey(m => m.ReceiverId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Article>().HasQueryFilter(a => !a.IsDeleted);
+            modelBuilder.Entity<ArticleAuthor>().HasQueryFilter(aa => !aa.Article.IsDeleted);
+            modelBuilder.Entity<ArticleRating>().HasQueryFilter(ar => !ar.Article.IsDeleted);
+            modelBuilder.Entity<CoAuthorInvitation>().HasQueryFilter(cai => !cai.Article.IsDeleted);
         }
     }
 }

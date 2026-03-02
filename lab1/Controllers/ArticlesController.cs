@@ -76,6 +76,23 @@ namespace lab1.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (article == null) return NotFound();
+
+            var chatHistory = await _context.ChatMessages
+                .Include(c => c.Sender)
+                .Where(c => c.ArticleId == id)
+                .OrderBy(c => c.SentAt)
+                .ToListAsync();
+
+            ViewBag.ChatHistory = chatHistory;
+
+            var currentUserId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+            var currentAuthor = await _context.Authors.FirstOrDefaultAsync(a => a.UserId == currentUserId);
+            ViewBag.CurrentAuthorName = currentAuthor?.FullName;
+
+            // === ДОДАНО ДЛЯ ПЕРЕВІРКИ ЗАБЛОКОВАНОГО СТАНУ ===
+            ViewBag.HasProfile = currentAuthor != null;
+            // ===============================================
+
             return View(article);
         }
 
@@ -263,19 +280,13 @@ namespace lab1.Controllers
                     return Forbid();
                 }
 
-                var invitations = _context.CoAuthorInvitations.Where(i => i.ArticleId == id);
-                if (invitations.Any())
-                {
-                    _context.CoAuthorInvitations.RemoveRange(invitations);
-                }
+                article.IsDeleted = true;
+                article.DeletedAt = DateTime.Now;
+                _context.Update(article);
 
-                if (article.ArticleAuthors != null && article.ArticleAuthors.Any())
-                {
-                    _context.ArticleAuthors.RemoveRange(article.ArticleAuthors);
-                }
-
-                _context.Articles.Remove(article);
                 await _context.SaveChangesAsync();
+
+                TempData["Message"] = "The article was deleted. Changed your mind? Just write to our admin, @karoshi, to restore it!";
             }
             return RedirectToAction(nameof(Index));
         }
@@ -321,6 +332,39 @@ namespace lab1.Controllers
 
             TempData["Message"] = "Thank you! Your rating has been saved";
             return RedirectToAction(nameof(Details), new { id = articleId });
+        }
+
+        // GET: Articles/Trash
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Trash()
+        {
+            var trashArticles = await _context.Articles
+                .IgnoreQueryFilters()
+                .Where(a => a.IsDeleted)
+                .OrderByDescending(a => a.DeletedAt)
+                .ToListAsync();
+
+            return View(trashArticles);
+        }
+
+        // POST: Articles/Restore/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Restore(int id)
+        {
+            var article = await _context.Articles.IgnoreQueryFilters().FirstOrDefaultAsync(a => a.Id == id);
+
+            if (article != null)
+            {
+                article.IsDeleted = false;
+                article.DeletedAt = null;
+                _context.Update(article);
+                await _context.SaveChangesAsync();
+
+                TempData["Message"] = "Article successfully restored and is now public again!";
+            }
+            return RedirectToAction(nameof(Trash));
         }
 
         private bool ArticleExists(int id) => _context.Articles.Any(e => e.Id == id);

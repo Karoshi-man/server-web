@@ -1,0 +1,198 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>404 - Lost in Space</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #080b14;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        .not-found-wrapper {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            animation: fadeUp 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .not-found-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 255, 200, 0.08) 0%, transparent 60%);
+            z-index: -1;
+            pointer-events: none;
+            animation: pulseGlow 4s infinite alternate;
+        }
+
+        .glass-404-card {
+            background: rgba(20, 24, 38, 0.4);
+            backdrop-filter: blur(40px) saturate(150%);
+            -webkit-backdrop-filter: blur(40px) saturate(150%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 40px;
+            padding: 80px 100px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .error-code {
+            font-size: 10rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 20px;
+            background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.2) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+            .error-code::after {
+                content: "404";
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(180deg, #00ffc8 0%, rgba(0,255,200,0) 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                opacity: 0.5;
+                filter: blur(8px);
+                z-index: -1;
+            }
+
+        .error-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .error-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.5);
+            max-width: 400px;
+            margin: 0 auto 40px auto;
+            line-height: 1.6;
+        }
+
+        .btn-return-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0, 255, 200, 0.1);
+            color: #00ffc8;
+            padding: 16px 40px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: 1px solid rgba(0, 255, 200, 0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0, 255, 200, 0.15);
+        }
+
+            .btn-return-home:hover {
+                background: #00ffc8;
+                color: #0a0f1e;
+                transform: translateY(-5px) scale(1.02);
+                box-shadow: 0 20px 40px rgba(0, 255, 200, 0.3);
+            }
+
+        .levitate-icon {
+            animation: levitate 3s ease-in-out infinite;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+
+        @@keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@keyframes pulseGlow {
+            from {
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 0.5;
+            }
+
+            to {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0.8;
+            }
+        }
+
+        @@keyframes levitate {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="not-found-wrapper">
+        <div class="not-found-glow"></div>
+
+        <div class="glass-404-card">
+            <div class="levitate-icon">
+                <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="#00ffc8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                </svg>
+            </div>
+
+            <div class="error-code">404</div>
+            <h2 class="error-title">Lost in the Void</h2>
+            <p class="error-subtitle">
+                The article or profile you are looking for has drifted into the unknown. It might have been deleted, or the link is broken.
+            </p>
+
+            <a href="/Articles" class="btn-return-home">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Return to Library
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

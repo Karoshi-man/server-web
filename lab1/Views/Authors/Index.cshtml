@@ -1,217 +1,515 @@
-﻿@model IEnumerable<lab1.Models.Author>
+﻿@using System.Security.Claims
+@model IEnumerable<lab1.Models.Author>
 
 @{
-    ViewData["Title"] = "Автори";
+    ViewData["Title"] = "Authors Community";
 }
 
 <style>
-    .authors-header {
+    .community-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         text-align: center;
-        margin-bottom: 60px;
-        padding-top: 40px;
+        margin-bottom: 50px;
+        padding-top: 60px;
+        position: relative;
     }
 
-    .authors-title {
-        font-size: 3rem;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.7) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 16px;
-    }
-
-    .authors-subtitle {
-        font-size: 1.1rem;
-        color: rgba(255, 255, 255, 0.4);
-        max-width: 500px;
-        margin: 0 auto 30px auto; /* Зменшив відступ знизу, щоб кнопка була ближче */
-    }
-
-    /* --- ВИПРАВЛЕНО: Змінено назву класу на btn-new-entry та покращено ефекти --- */
-    .btn-new-entry {
-        background: rgba(255, 255, 255, 0.05);
+    .community-title {
+        font-size: 4rem;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1;
         color: #fff;
-        padding: 12px 32px;
-        border-radius: 100px;
+        margin-bottom: 16px;
+        text-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .community-subtitle {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.5);
+        font-weight: 400;
+        max-width: 500px;
+        margin-bottom: 30px;
+    }
+
+    .btn-create-glass {
+        background: rgba(0, 255, 200, 0.1);
+        color: #00ffc8;
+        padding: 14px 36px;
+        border-radius: 40px;
         text-decoration: none;
         font-weight: 600;
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 1rem;
+        border: 1px solid rgba(0, 255, 200, 0.3);
+        backdrop-filter: blur(20px);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        gap: 10px;
+        box-shadow: 0 10px 30px rgba(0, 255, 200, 0.1);
     }
 
-        .btn-new-entry:hover {
-            background: rgba(255, 255, 255, 0.15);
+        .btn-create-glass:hover {
+            background: #00ffc8;
+            color: #0a0f1e;
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 255, 200, 0.3);
+        }
+
+    .controls-bar {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+    }
+
+    .search-wrapper {
+        flex-grow: 1;
+        position: relative;
+        min-width: 250px;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255,255,255,0.4);
+        pointer-events: none;
+        transition: color 0.3s;
+    }
+
+    .glass-search {
+        width: 100%;
+        padding: 14px 20px 14px 50px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 30px;
+        color: #fff;
+        font-size: 0.95rem;
+        font-weight: 500;
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+        .glass-search:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
             border-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+        }
+
+            .glass-search:focus + .search-icon {
+                color: #fff;
+            }
+
+        .glass-search::placeholder {
+            color: rgba(255,255,255,0.3);
+        }
+
+    .glass-select {
+        appearance: none;
+        -webkit-appearance: none;
+        background: rgba(255, 255, 255, 0.03) url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") no-repeat right 16px center;
+        background-size: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 30px;
+        color: #fff;
+        padding: 14px 45px 14px 20px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+        .glass-select:focus, .glass-select:hover {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .glass-select option {
+            background: #121624;
             color: #fff;
+            padding: 10px;
         }
 
     .authors-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         gap: 30px;
     }
 
-    .profile-card {
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 24px;
-        padding: 40px 24px;
-        text-align: center;
-        transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    .author-card {
         position: relative;
+        background: rgba(20, 24, 38, 0.4);
+        backdrop-filter: blur(60px) saturate(150%);
+        -webkit-backdrop-filter: blur(60px) saturate(150%);
+        border-radius: 32px;
+        padding: 40px 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        z-index: 1;
         overflow: hidden;
     }
 
-        .profile-card:hover {
-            transform: translateY(-8px);
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        .author-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 32px;
+            background: radial-gradient(circle at 50% 0%, rgba(100, 150, 255, 0.15), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: -1;
+            pointer-events: none;
         }
 
-    .avatar-wrapper {
-        width: 100px;
-        height: 100px;
+        .author-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+            .author-card:hover::before {
+                opacity: 1;
+            }
+
+    .author-avatar {
+        width: 86px;
+        height: 86px;
         border-radius: 50%;
-        background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-        margin: 0 auto 20px auto;
+        background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+        border: 1px solid rgba(255,255,255,0.1);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: rgba(255, 255, 255, 0.8);
-        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
-        position: relative;
-    }
-
-    .profile-card:hover .avatar-wrapper {
+        font-size: 2.2rem;
+        font-weight: 800;
         color: #fff;
-        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2), 0 0 30px rgba(255, 255, 255, 0.1);
+        margin-bottom: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        position: relative;
+        z-index: 2;
+        transition: all 0.3s ease;
     }
 
-    .profile-name {
-        font-size: 1.25rem;
-        font-weight: 600;
+    .author-card:hover .author-avatar {
+        box-shadow: 0 0 0 2px rgba(100, 150, 255, 0.4), 0 15px 35px rgba(100, 150, 255, 0.2);
+        transform: scale(1.05);
+        color: #8cb4ff;
+    }
+
+    .author-name {
+        font-size: 1.6rem;
+        font-weight: 700;
         color: #fff;
         margin-bottom: 4px;
-        display: block;
-        text-decoration: none;
+        transition: color 0.3s;
     }
 
-    .profile-handle {
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.4);
+    .author-nickname {
+        font-size: 0.95rem;
+        color: #8cb4ff;
         margin-bottom: 20px;
-        font-family: 'Courier New', monospace;
+        font-weight: 500;
+        letter-spacing: 0.02em;
     }
 
-    .profile-bio {
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.6);
-        line-height: 1.5;
+    .author-stats {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: 3;
+    }
+
+    .stat-pill {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.05);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: rgba(255,255,255,0.7);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s;
+    }
+
+        .stat-pill.rating-pill {
+            border-color: rgba(255, 214, 10, 0.2);
+            color: #FFD60A;
+            cursor: pointer;
+        }
+
+            .stat-pill.rating-pill:hover {
+                background: rgba(255, 214, 10, 0.15);
+                transform: scale(1.05);
+            }
+
+    .author-bio {
+        font-size: 0.95rem;
+        color: rgba(255, 255, 255, 0.5);
+        line-height: 1.6;
+        flex-grow: 1;
         margin-bottom: 30px;
         display: -webkit-box;
-        -webkit-line-clamp: 2;
+        -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        min-height: 2.7em;
     }
 
-    .actions-bar {
+    .card-bottom {
+        width: 100%;
         display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        position: relative;
+        z-index: 2;
+    }
+
+    .read-action {
+        display: inline-flex;
+        align-items: center;
         justify-content: center;
-        gap: 16px;
-        opacity: 0.4;
-        transition: opacity 0.2s;
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
-        padding-top: 20px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.05);
+        color: #fff;
+        transition: all 0.3s;
+        cursor: pointer;
     }
 
-    .profile-card:hover .actions-bar {
+    .author-card:hover .read-action {
+        background: #fff;
+        color: #000;
+        transform: translateX(5px);
+    }
+
+    .admin-actions {
+        display: flex;
+        gap: 8px;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.4s ease;
+    }
+
+    .author-card:hover .admin-actions {
         opacity: 1;
+        transform: translateY(0);
     }
 
-    .action-link {
-        color: rgba(255, 255, 255, 0.5);
-        text-decoration: none;
-        font-size: 1.2rem;
-        transition: transform 0.2s, color 0.2s;
+    .action-glass-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.05);
+        color: #fff;
+        backdrop-filter: blur(10px);
+        transition: all 0.2s;
     }
 
-        .action-link:hover {
-            color: #fff;
+        .action-glass-btn:hover {
+            background: rgba(255,255,255,0.2);
             transform: scale(1.1);
         }
 
-    .delete-link:hover {
-        color: #ff453a;
+        .action-glass-btn.delete:hover {
+            background: rgba(255, 69, 58, 0.2);
+            color: #ff453a;
+            border-color: rgba(255, 69, 58, 0.3);
+        }
+
+    .stretched-link::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1;
+    }
+
+    .no-results {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 60px 20px;
+        color: rgba(255,255,255,0.4);
+        font-size: 1.2rem;
+        display: none;
     }
 </style>
 
 <div class="container pb-5">
 
-    <div class="authors-header">
-        <div>
-            <h1 class="authors-title">Authors</h1>
-            <p class="authors-subtitle">Voices that shape our journal.</p>
-        </div>
+    <div class="community-header">
+        <h1 class="community-title">Authors</h1>
+        <p class="community-subtitle">Discover the creative minds shaping our stories and ideas.</p>
+
         @if (User.IsInRole("Admin"))
         {
-            <a asp-action="Create" class="btn-new-entry">
+            <a asp-action="Create" class="btn-create-glass">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 1 0-16 0"></path><line x1="20" y1="8" x2="24" y2="8"></line><line x1="22" y1="6" x2="22" y2="10"></line></svg>
                 Add New Profile
             </a>
         }
     </div>
 
-    <div class="authors-grid">
-        @foreach (var item in Model)
-        {
-            <div class="profile-card">
+    <div class="controls-bar">
+        <div class="search-wrapper">
+            <input type="text" id="liveSearchInput" class="glass-search" placeholder="Find an author by name or handle..." autocomplete="off" />
+            <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </div>
 
-                <a asp-action="Details" asp-route-id="@item.Id" style="text-decoration: none;">
-                    @{
-                        var initial = !string.IsNullOrEmpty(item.FullName) ? item.FullName.Substring(0, 1).ToUpper() : "?";
-                    }
-                    <div class="avatar-wrapper">
-                        @initial
-                    </div>
-
-                    <span class="profile-name">@item.FullName</span>
-
-                    @if (!string.IsNullOrEmpty(item.Nickname))
-                    {
-                        <div class="profile-handle">@@@item.Nickname</div>
-                    }
-                    else
-                    {
-                        <div class="profile-handle" style="opacity: 0;">-</div>
-                    }
-
-                    <p class="profile-bio">
-                        @(string.IsNullOrEmpty(item.Bio) ? "No bio available." : item.Bio)
-                    </p>
-                </a>
-
-                <div class="actions-bar">
-                    <a asp-action="Details" asp-route-id="@item.Id" class="action-link" title="View Profile">👁</a>
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="action-link" title="Edit Profile">✎</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="action-link delete-link" title="Delete Profile">✕</a>
-                    }
-                </div>
-
-            </div>
-        }
+        <form method="get" id="filterForm" style="display: flex; gap: 16px;">
+            <select name="sortBy" class="glass-select" onchange="document.getElementById('filterForm').submit();">
+                <option value="newest" selected="@(ViewBag.CurrentSort == "newest" ? "selected" : null)">Newest Members</option>
+                <option value="rating" selected="@(ViewBag.CurrentSort == "rating" ? "selected" : null)">Highest Rated</option>
+                <option value="articles" selected="@(ViewBag.CurrentSort == "articles" ? "selected" : null)">Most Articles</option>
+                <option value="age" selected="@(ViewBag.CurrentSort == "age" ? "selected" : null)">Age</option>
+            </select>
+        </form>
     </div>
 
+    <div class="authors-grid" id="authorsGrid">
+        @foreach (var item in Model)
+        {
+            var today = DateTime.Today;
+            var age = today.Year - item.DateOfBirth.Year;
+            if (item.DateOfBirth.Date > today.AddYears(-age)) age--;
+
+            var articlesCount = item.ArticleAuthors != null ? item.ArticleAuthors.Count : 0;
+
+            <div class="author-card author-item">
+
+                <a asp-action="Details" asp-route-id="@item.Id" class="stretched-link" style="text-decoration: none;"></a>
+
+                @{
+                    var initial = !string.IsNullOrEmpty(item.FullName) ? item.FullName.Substring(0, 1).ToUpper() : "?";
+                }
+                <div class="author-avatar">@initial</div>
+
+                <div class="author-name searchable-name">@item.FullName</div>
+
+                <div class="author-nickname searchable-nickname">
+                    @(string.IsNullOrEmpty(item.Nickname) ? " " : $"@{item.Nickname}")
+                </div>
+
+                <div class="author-stats">
+
+                    <a asp-action="Details" asp-route-id="@item.Id" class="stat-pill rating-pill" title="Rate this author" style="text-decoration: none;">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+                        @(item.Rating > 0 ? item.Rating.ToString("0.0") : "N/A")
+                    </a>
+
+                    <div class="stat-pill" title="Total Articles">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        @articlesCount
+                    </div>
+
+                    <div class="stat-pill" title="Age">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        @age y.o.
+                    </div>
+                </div>
+
+                <p class="author-bio searchable-bio">
+                    @(string.IsNullOrEmpty(item.Bio) ? "This author prefers to keep an air of mystery..." : item.Bio)
+                </p>
+
+                <div class="card-bottom">
+                    <div class="read-action">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </div>
+
+                    <div class="admin-actions">
+                        @{
+                            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                            var isAdmin = User.IsInRole("Admin");
+                        }
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="action-glass-btn" title="Edit Profile" style="position: relative; z-index: 5;">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="action-glass-btn delete" title="Delete Profile" style="position: relative; z-index: 5;">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div id="noResultsMsg" class="no-results">
+            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 15px; opacity: 0.5;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <div>We couldn't find any authors matching that description.</div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("liveSearchInput");
+            const authors = document.querySelectorAll(".author-item");
+            const noResultsMsg = document.getElementById("noResultsMsg");
+
+            searchInput.addEventListener("input", function (e) {
+                const term = e.target.value.toLowerCase().trim();
+                let hasVisibleCards = false;
+
+                authors.forEach(card => {
+                    const name = card.querySelector(".searchable-name") ? card.querySelector(".searchable-name").innerText.toLowerCase() : "";
+                    const nickname = card.querySelector(".searchable-nickname") ? card.querySelector(".searchable-nickname").innerText.toLowerCase() : "";
+                    const bio = card.querySelector(".searchable-bio") ? card.querySelector(".searchable-bio").innerText.toLowerCase() : "";
+
+                    if (name.includes(term) || nickname.includes(term) || bio.includes(term)) {
+                        card.style.display = "flex";
+                        hasVisibleCards = true;
+                        setTimeout(() => {
+                            card.style.opacity = "1";
+                            card.style.transform = "scale(1)";
+                        }, 10);
+                    } else {
+                        card.style.opacity = "0";
+                        card.style.transform = "scale(0.95)";
+                        setTimeout(() => {
+                            card.style.display = "none";
+                        }, 300);
+                    }
+                });
+
+                if (!hasVisibleCards && term !== "") {
+                    setTimeout(() => { noResultsMsg.style.display = "block"; }, 300);
+                } else {
+                    noResultsMsg.style.display = "none";
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,138 @@
+﻿@model IEnumerable<lab1.Models.Article>
+
+@{
+    ViewData["Title"] = "Trash Bin";
+}
+
+<style>
+    .trash-header {
+        text-align: center;
+        margin-bottom: 50px;
+        padding-top: 60px;
+    }
+
+    .trash-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: #ff453a;
+        letter-spacing: -0.04em;
+        text-shadow: 0 5px 20px rgba(255, 69, 58, 0.3);
+        margin-bottom: 15px;
+    }
+
+    .trash-subtitle {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .trash-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 30px;
+    }
+
+    .trash-card {
+        background: rgba(30, 20, 20, 0.4); /* Злегка червонуватий фон */
+        backdrop-filter: blur(40px) saturate(150%);
+        -webkit-backdrop-filter: blur(40px) saturate(150%);
+        border: 1px solid rgba(255, 69, 58, 0.15);
+        border-radius: 24px;
+        padding: 30px;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+        .trash-card:hover {
+            border-color: rgba(255, 69, 58, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 69, 58, 0.1);
+            transform: translateY(-5px);
+        }
+
+    .deleted-date {
+        font-size: 0.8rem;
+        color: #ff453a;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .trash-article-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 20px;
+        line-height: 1.3;
+    }
+
+    .btn-restore {
+        width: 100%;
+        background: rgba(0, 255, 200, 0.1);
+        border: 1px solid rgba(0, 255, 200, 0.3);
+        color: #00ffc8;
+        padding: 12px;
+        border-radius: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-restore:hover {
+            background: #00ffc8;
+            color: #000;
+            box-shadow: 0 10px 20px rgba(0, 255, 200, 0.2);
+        }
+
+    .empty-trash {
+        text-align: center;
+        padding: 100px 20px;
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 1.2rem;
+    }
+</style>
+
+<div class="container pb-5">
+    <div class="trash-header">
+        <h1 class="trash-title">Trash Bin</h1>
+        <p class="trash-subtitle">Deleted articles rest here. You can restore them anytime.</p>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-trash">
+            <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1" style="margin-bottom: 20px; opacity: 0.5;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <div>The trash bin is currently empty.</div>
+        </div>
+    }
+    else
+    {
+        <div class="trash-grid">
+            @foreach (var item in Model)
+            {
+                <div class="trash-card">
+                    <div class="deleted-date">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        Deleted: @(item.DeletedAt.HasValue? item.DeletedAt.Value.ToString("MMM dd, HH:mm") : "Unknown")
+                    </div>
+
+                    <h2 class="trash-article-title">@item.Title</h2>
+
+                    <form asp-action="Restore" method="post">
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button type="submit" class="btn-restore">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                            Restore Article
+                        </button>
+                    </form>
+                </div>
+            }
+        </div>
+    }
+</div>

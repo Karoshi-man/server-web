@@ -1,171 +1,326 @@
 ﻿@model lab1.Models.Author
 
 @{
-    ViewData["Title"] = "Edit Profile";
+    ViewData["Title"] = "Edit Author Profile";
+    var names = Model.FullName?.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+    var firstName = names != null && names.Length > 0 ? names[0] : "";
+    var lastName = names != null && names.Length > 1 ? string.Join(" ", names.Skip(1)) : "";
 }
 
 <style>
-    .profile-edit-container {
-        max-width: 600px;
-        margin: 0 auto;
-        padding-top: 40px;
-        animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    :root {
+        /* Фон */
+        --bg-deep: #02040a;
+        /* Скло */
+        --glass-base: rgba(20, 30, 50, 0.25);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --glass-border-highlight: rgba(255, 255, 255, 0.15);
+        --glass-blur: 60px;
+        /* Кольори */
+        --text-primary: #ffffff;
+        --text-secondary: rgba(255, 255, 255, 0.7); /* Зроблено світлішим для читабельності */
+        --text-placeholder: rgba(255, 255, 255, 0.3);
+        --accent-sapphire: rgba(10, 60, 160, 0.8);
+        /* Розміри */
+        --radius-panel: 40px;
+        --radius-input: 16px;
+        --input-height: 56px; /* Збільшено висоту полів */
     }
 
-    .glass-card-form {
-        background: rgba(30, 30, 35, 0.4);
-        backdrop-filter: blur(40px) saturate(120%);
-        -webkit-backdrop-filter: blur(40px) saturate(120%);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 32px;
-        padding: 48px;
-        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        background-color: var(--bg-deep);
+        color: var(--text-primary);
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+        overflow: hidden; /* Жорстко забираємо скрол */
     }
 
-    .form-header {
+    /* --- АМБІЄНТНИЙ ФОН --- */
+    .ambient-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        pointer-events: none;
+    }
+
+    .orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(150px);
+        opacity: 0.4;
+        animation: slowFloat 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .orb-1 {
+        top: -20%;
+        left: -10%;
+        width: 60vw;
+        height: 60vw;
+        background: rgba(0, 40, 120, 0.3);
+    }
+
+    .orb-2 {
+        bottom: -20%;
+        right: -10%;
+        width: 50vw;
+        height: 50vw;
+        background: rgba(0, 100, 200, 0.2);
+        animation-delay: -12s;
+    }
+
+    /* --- LAYOUT --- */
+    .layout-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 80vh;
+        width: 100%;
+        padding: 0 40px; /* Відступи по боках */
+        box-sizing: border-box;
+    }
+
+    .split-form-container {
+        display: flex;
+        gap: 40px; /* Більша відстань між панелями */
+        width: 100%;
+        max-width: 1400px; /* Збільшена загальна ширина */
+        height: 80vh; /* Жорстка висота для запобігання скролу */
+        align-items: stretch; /* Права панель тягнеться на всю висоту */
+        animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+
+    /* --- СПІЛЬНИЙ СТИЛЬ СКЛА --- */
+    .glass-module {
+        background: var(--glass-base);
+        backdrop-filter: blur(var(--glass-blur)) saturate(120%);
+        -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(120%);
+        border-radius: var(--radius-panel);
+        border: 1px solid var(--glass-border);
+        border-top: 1px solid var(--glass-border-highlight);
+        box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.05);
+        overflow: hidden;
+    }
+
+    /* --- ЛІВА ПАНЕЛЬ --- */
+    .sidebar-module {
+        width: 320px;
+        flex-shrink: 0;
+        padding: 48px 32px;
+        display: flex;
+        flex-direction: column;
         text-align: center;
+        align-self: center;
+        height: max-content;
+    }
+
+    .avatar-display {
+        width: 120px;
+        height: 120px; /* Збільшений аватар */
+        margin: 0 auto 24px auto;
+        border-radius: 320px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+        border: 1px solid var(--glass-border-highlight);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        font-weight: 300;
+        color: #fff;
+        box-shadow: inset 0 2px 10px rgba(255,255,255,0.05);
+    }
+
+    .meta-name {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+        letter-spacing: -0.01em;
+    }
+
+    .meta-role {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+    }
+
+    /* === ОНОВЛЕНІ КНОПКИ ТУТ === */
+    .sidebar-actions {
+        margin-top: 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px; /* Трохи зменшено відступ між кнопками */
+    }
+
+    .btn-sapphire {
+        width: 100%;
+        height: 44px; /* Менші та акуратніші */
+        border-radius: 14px;
+        background: rgba(10, 60, 140, 0.35); /* Стриманий прозорий синій */
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-top: 1px solid rgba(255, 255, 255, 0.2); /* Світліша верхня грань (ефект скла) */
+        color: #fff;
+        font-size: 0.95rem; /* Стриманіший шрифт */
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+    }
+
+        .btn-sapphire:hover {
+            background: rgba(15, 80, 180, 0.5);
+            border-color: rgba(255, 255, 255, 0.15);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(10, 60, 160, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+
+    .btn-glass-secondary {
+        width: 100%;
+        height: 44px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.015); /* Майже невидимий фон */
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+        .btn-glass-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+    /* === КІНЕЦЬ ОНОВЛЕНИХ КНОПОК === */
+
+    /* --- ПРАВА ПАНЕЛЬ --- */
+    .workspace-module {
+        flex: 1; /* Займає весь залишок ширини */
+        padding: 56px 64px;
+        display: flex;
+        flex-direction: column;
+        height: 100%; /* Розтягується на всю висоту контейнера (80vh) */
+        box-sizing: border-box;
+    }
+
+    .ws-header {
         margin-bottom: 40px;
     }
 
-    .form-title {
-        font-size: 2rem;
+    .ws-title {
+        font-size: 2.2rem;
         font-weight: 700;
-        color: #fff;
-        margin-bottom: 8px;
         letter-spacing: -0.02em;
+        margin-bottom: 10px;
     }
 
-    .form-subtitle {
-        color: rgba(255, 255, 255, 0.4);
-        font-size: 0.9rem;
+    .ws-desc {
+        color: var(--text-secondary);
+        font-size: 1.05rem;
     }
 
-    .avatar-edit-placeholder {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px dashed rgba(255, 255, 255, 0.2);
-        margin: 0 auto 24px auto;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: rgba(255, 255, 255, 0.3);
-        font-size: 2rem;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        position: relative;
-    }
-
-    .avatar-edit-placeholder:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.5);
-            color: #fff;
-    }
-
-    .avatar-edit-icon {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        background: #fff;
-        color: #000;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        font-size: 0.8rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-    }
-
-    .input-group-clean {
-        margin-bottom: 24px;
-    }
-
-    .input-label {
-        display: block;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: rgba(255, 255, 255, 0.4);
-        margin-bottom: 8px;
-        font-weight: 600;
-    }
-
-    .input-field {
-        width: 100%;
-        background: transparent;
-        border: none;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        color: #fff;
-        font-size: 1rem;
-        padding: 12px 0;
-        transition: border-color 0.3s;
-        border-radius: 0;
-    }
-
-    .input-field:focus {
-            outline: none;
-            border-bottom-color: #fff;
-            background: rgba(255,255,255,0.02);
-    }
-
-    .form-grid {
+    .form-grid-3 {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 24px;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 28px 24px;
+        flex: 1; /* Дозволяє сітці заповнити простір */
+        grid-template-rows: min-content min-content 1fr; /* Останній рядок (біо) займає залишок висоти */
     }
 
-    .btn-save {
-        background: #fff;
-        color: #000;
-        border: none;
-        width: 100%;
-        padding: 14px;
-        border-radius: 100px;
-        font-weight: 600;
-        font-size: 1rem;
-        margin-top: 32px;
-        cursor: pointer;
-        transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
-        box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+    .span-2 {
+        grid-column: span 2;
     }
 
-    .btn-save:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 50px rgba(255, 255, 255, 0.2);
+    .span-3 {
+        grid-column: span 3;
     }
 
-    .btn-cancel {
-        display: block;
-        text-align: center;
-        margin-top: 20px;
-        color: rgba(255, 255, 255, 0.4);
-        text-decoration: none;
-        font-size: 0.9rem;
-        transition: color 0.2s;
+    .input-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
     }
 
-    .btn-cancel:hover {
-        color: #fff;
+    .bio-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        height: 100%;
     }
 
-    .text-danger {
+    .glass-label {
         font-size: 0.8rem;
-        color: #ff453a;
-        margin-top: 4px;
-        display: block;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--text-secondary);
+        margin-left: 6px;
     }
 
-    input[type="date"] {
+    /* Інпути: виразніші */
+    .glass-input {
+        width: 100%;
+        box-sizing: border-box;
+        height: var(--input-height);
+        border-radius: var(--radius-input);
+        background: rgba(0, 0, 0, 0.3); /* Трохи темніше для контрасту */
+        border: 1px solid var(--glass-border);
+        padding: 0 24px;
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 400;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.5); /* Глибина тексту */
+        transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+        .glass-input:focus {
+            outline: none;
+            background: rgba(0, 40, 100, 0.2);
+            border-color: rgba(100, 150, 255, 0.4);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 0 0 20px rgba(0, 50, 150, 0.15);
+        }
+
+        .glass-input::placeholder {
+            color: var(--text-placeholder);
+            font-weight: 300;
+            text-shadow: none;
+        }
+
+    textarea.glass-input {
+        flex: 1; /* Розтягується на всю доступну висоту */
+        padding: 24px;
+        resize: none;
+        line-height: 1.6;
+    }
+
+    input[type="date"].glass-input {
         color-scheme: dark;
+    }
+
+    .validation-msg {
+        color: #ff453a;
+        font-size: 0.85rem;
+        margin-left: 6px;
+        font-weight: 500;
     }
 
     @@keyframes fadeUp {
         from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(30px);
         }
 
         to {
@@ -173,72 +328,161 @@
             transform: translateY(0);
         }
     }
+
+    @@keyframes slowFloat {
+        from {
+            transform: translate(0,0);
+        }
+
+        to {
+            transform: translate(4vw, 3vh);
+        }
+    }
+
+    /* Адаптивність (залишається базовою, оскільки головний фокус на десктоп без скролу) */
+    @@media (max-width: 1024px) {
+        body {
+            overflow: auto;
+        }
+
+        .layout-center {
+            height: auto;
+            padding: 100px 4vw 4vw 4vw;
+        }
+
+        .split-form-container {
+            flex-direction: column;
+            align-items: stretch;
+            max-width: 800px;
+            height: auto;
+        }
+
+        .sidebar-module {
+            width: auto;
+            flex-direction: row;
+            align-items: center;
+            padding: 40px;
+            gap: 40px;
+            text-align: left;
+        }
+
+        .avatar-display {
+            margin: 0;
+            width: 100px;
+            height: 100px;
+            font-size: 2rem;
+        }
+
+        .sidebar-actions {
+            margin-top: 0;
+            flex-direction: row;
+            flex: 1;
+        }
+
+        .btn-sapphire, .btn-glass-secondary {
+            flex: 1;
+        }
+
+        .workspace-module {
+            padding: 48px;
+            height: auto;
+        }
+
+        .form-grid-3 {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        textarea.glass-input {
+            min-height: 300px;
+        }
+    }
 </style>
 
-<div class="profile-edit-container pb-5">
+<div class="ambient-background">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+</div>
 
-    <div class="glass-card-form">
+<div class="layout-center">
+    <form asp-action="Edit" method="post" class="split-form-container">
+        <div asp-validation-summary="ModelOnly" class="validation-msg" style="display:none;"></div>
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="UserId" />
 
-        <div class="form-header">
-            @{
-                var initial = !string.IsNullOrEmpty(Model.FullName) ? Model.FullName.Substring(0, 1).ToUpper() : "?";
-            }
-            <div class="avatar-edit-placeholder">
+        <aside class="glass-module sidebar-module">
+            <div class="avatar-display">
+                @{
+                    var initial = !string.IsNullOrEmpty(firstName) ? firstName.Substring(0, 1).ToUpper() : "A";
+                }
                 @initial
-                <div class="avatar-edit-icon">✎</div>
             </div>
-            <h2 class="form-title">Edit Profile</h2>
-            <p class="form-subtitle">Update author information.</p>
-        </div>
-
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
-            <input type="hidden" asp-for="Id" />
-
-            <div class="input-group-clean">
-                <label asp-for="FullName" class="input-label">Full Name</label>
-                <input asp-for="FullName" class="input-field" placeholder="e.g. Isaac Asimov" />
-                <span asp-validation-for="FullName" class="text-danger"></span>
+            <div>
+                <div class="meta-name">@firstName @lastName</div>
+                <div class="meta-role">Authorized Author</div>
             </div>
 
-            <div class="form-grid">
-                <div class="input-group-clean">
-                    <label asp-for="Nickname" class="input-label">Nickname</label>
-                    <div style="position: relative;">
-                        <span style="position: absolute; left: 0; top: 12px; color: rgba(255,255,255,0.3);">@@</span>
-                        <input asp-for="Nickname" class="input-field" style="padding-left: 20px;" placeholder="username" />
-                    </div>
-                    <span asp-validation-for="Nickname" class="text-danger"></span>
+            <div class="sidebar-actions">
+                <button type="submit" class="btn-sapphire">Save Changes</button>
+                <a asp-action="Index" class="btn-glass-secondary">Discard</a>
+            </div>
+        </aside>
+        
+        <main class="glass-module workspace-module">
+            <div class="ws-header">
+                <h1 class="ws-title">Update Identity</h1>
+                <p class="ws-desc">Modify your professional presence</p>
+            </div>
+
+            <div class="form-grid-3">
+                <div class="input-wrapper">
+                    <label class="glass-label">First Name</label>
+                    <input type="text" class="glass-input" value="@firstName" oninput="syncFullName()" id="fname" />
+                </div>
+                <div class="input-wrapper">
+                    <label class="glass-label">Last Name</label>
+                    <input type="text" class="glass-input" value="@lastName" oninput="syncFullName()" id="lname" />
+                </div>
+                <input type="hidden" asp-for="FullName" id="hiddenName" />
+
+                <div class="input-wrapper">
+                    <label asp-for="Nickname" class="glass-label">Username</label>
+                    <input asp-for="Nickname" class="glass-input" placeholder="@@username" />
+                    <span asp-validation-for="Nickname" class="validation-msg"></span>
                 </div>
 
-                <div class="input-group-clean">
-                    <label asp-for="DateOfBirth" class="input-label">Birth Date</label>
-                    <input asp-for="DateOfBirth" class="input-field" type="date" />
-                    <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                <div class="input-wrapper span-2">
+                    <label asp-for="Email" class="glass-label">Email</label>
+                    <input asp-for="Email" class="glass-input" type="email" />
+                    <span asp-validation-for="Email" class="validation-msg"></span>
+                </div>
+
+                <div class="input-wrapper">
+                    <label asp-for="DateOfBirth" class="glass-label">Birth Date</label>
+                    <input asp-for="DateOfBirth" class="glass-input" type="date" />
+                </div>
+
+                <div class="bio-wrapper span-3">
+                    <label asp-for="Bio" class="glass-label">Biography</label>
+                    <textarea asp-for="Bio" class="glass-input" placeholder="Tell your story..."></textarea>
+                    <span asp-validation-for="Bio" class="validation-msg"></span>
                 </div>
             </div>
-
-            <div class="input-group-clean">
-                <label asp-for="Email" class="input-label">Email Address</label>
-                <input asp-for="Email" class="input-field" type="email" placeholder="author@ijournal.com" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-
-            <div class="input-group-clean">
-                <label asp-for="Bio" class="input-label">Biography</label>
-                <textarea asp-for="Bio" class="input-field" rows="4" placeholder="Tell us about the author..."></textarea>
-                <span asp-validation-for="Bio" class="text-danger"></span>
-            </div>
-
-            <input type="submit" value="Save Changes" class="btn-save" />
-            <a asp-action="Index" class="btn-cancel">Discard Changes</a>
-
-        </form>
-    </div>
+        </main>
+    </form>
 </div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        function syncFullName() {
+            const f = document.getElementById('fname').value;
+            const l = document.getElementById('lname').value;
+            document.getElementById('hiddenName').value = f + " " + l;
+        }
+        document.addEventListener('DOMContentLoaded', syncFullName);
+    </script>
 }

@@ -1,0 +1,767 @@
+﻿@using lab1.Controllers
+@{
+    ViewData["Title"] = "Chats";
+}
+
+<style>
+    /* Блокуємо прокрутку всієї сторінки, робимо її як статичний додаток */
+    body {
+        overflow: hidden;
+    }
+
+    /* Розтягуємо контейнер на всю ширину і висоту */
+    .chat-layout-wrapper {
+        height: calc(100vh - 160px);
+        margin: 10px auto;
+        max-width: 1500px;
+        padding: 0 15px;
+    }
+
+    /* Головне вікно - єдиний скляний моноліт */
+    .app-window {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        border-radius: 40px;
+        position: relative;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+    }
+
+        /* Кольорові відблиски на фоні для глибини (Spatial UI ефект) */
+        .app-window::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: -10%;
+            width: 500px;
+            height: 500px;
+            background: transparent;
+            filter: blur(120px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .app-window::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: transparent;
+            filter: blur(150px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+    .sidebar {
+        width: 380px;
+        display: flex;
+        flex-direction: column;
+        background: transparent;
+        z-index: 1;
+        padding: 15px 5px 15px 15px;
+    }
+
+    .sidebar-header {
+        padding: 20px 25px 10px 25px;
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        color: #fff;
+    }
+
+    .contacts-list {
+        overflow-y: auto;
+        flex-grow: 1;
+        padding: 10px 15px 10px 10px;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+        .contacts-list::-webkit-scrollbar {
+            display: none;
+        }
+
+    /* Плаваючі контакти */
+    .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px 20px;
+        border-radius: 28px;
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        margin-bottom: 8px;
+        position: relative;
+        background: transparent;
+    }
+
+        .contact-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: #fff;
+            transform: translateX(6px);
+        }
+
+        .contact-item.active {
+            background: rgba(255, 255, 255, 0.05); /* Ніяких яскравих рамок, тільки легке світло */
+            color: #fff;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            transform: translateX(10px);
+        }
+
+            /* Неонова мітка зліва для активного чату */
+            .contact-item.active::before {
+                content: '';
+                position: absolute;
+                left: 4px;
+                top: 25%;
+                bottom: 25%;
+                width: 4px;
+                background: #00ffc8;
+                border-radius: 10px;
+                box-shadow: 0 0 15px #00ffc8;
+            }
+
+    .contact-avatar {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.3rem;
+        color: #fff;
+        flex-shrink: 0;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1), 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+    .active .contact-avatar {
+        background: linear-gradient(135deg, rgba(0,255,200,0.2), rgba(0,255,200,0.02));
+        color: #00ffc8;
+        box-shadow: inset 0 0 0 1px rgba(0,255,200,0.3), 0 10px 20px rgba(0,255,200,0.1);
+    }
+
+    .contact-info {
+        overflow: hidden;
+        flex-grow: 1;
+        min-width: 0;
+    }
+
+    .contact-name-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 4px;
+    }
+
+    .contact-name {
+        font-weight: 600;
+        font-size: 1.05rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #fff;
+        display: block;
+        max-width: 100%;
+    }
+
+    .contact-time {
+        font-size: 0.7rem;
+        opacity: 0.5;
+    }
+
+    .contact-msg-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .contact-msg {
+        font-size: 0.85rem;
+        opacity: 0.6;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 180px;
+    }
+
+    .unread-badge {
+        background: #ff453a;
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 12px;
+    }
+
+    .chat-area {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        z-index: 1;
+    }
+
+    .chat-topbar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 25px 40px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        z-index: 10;
+        background: transparent;
+        backdrop-filter: blur(10px) saturate(100%);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    .chat-topbar-info h3 {
+        margin: 0;
+        font-size: 1.3rem;
+        color: #fff;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+    }
+
+    .chat-status {
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.4);
+        font-weight: 500;
+        transition: color 0.3s;
+    }
+
+        .chat-status.online {
+            color: #00ffc8;
+        }
+
+    .msg-list {
+        flex-grow: 1;
+        padding: 100px 40px 30px 40px; /* Зверху відступ, щоб текст не залазив під topbar одразу */
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        scroll-behavior: smooth;
+    }
+
+        .msg-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .msg-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+    .date-badge {
+        align-self: center;
+        position: sticky;
+        top: 1px;
+        z-index: 5;
+        background: rgba(20, 25, 40, 0.85);
+        color: rgba(255, 255, 255, 0.8);
+        padding: 6px 20px;
+        border-radius: 30px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin: 25px 0;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        margin-top: 10px;
+    }
+
+    /* Бульбашки (більш повітряні) */
+    .msg-wrapper {
+        display: flex;
+        width: 100%;
+        margin-bottom: 12px;
+    }
+
+        .msg-wrapper.others {
+            justify-content: flex-start;
+        }
+
+        .msg-wrapper.mine {
+            justify-content: flex-end;
+        }
+
+    .msg-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+        border: 1px solid rgba(255,255,255,0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        font-weight: bold;
+        color: #fff;
+        margin-right: 12px;
+        align-self: flex-end;
+        flex-shrink: 0;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .msg-bubble-container {
+        display: flex;
+        flex-direction: column;
+        max-width: 70%;
+    }
+
+    .others .msg-bubble-container {
+        align-items: flex-start;
+    }
+
+    .mine .msg-bubble-container {
+        align-items: flex-end;
+    }
+
+    .msg-bubble {
+        padding: 12px 18px;
+        font-size: 1rem;
+        line-height: 1.5;
+        position: relative;
+        min-width: 70px;
+        word-wrap: break-word;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .others .msg-bubble {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        color: #fff;
+        border-radius: 24px 24px 24px 8px;
+        backdrop-filter: blur(20px);
+    }
+
+    .mine .msg-bubble {
+        background: linear-gradient(135deg, rgba(0, 255, 200, 0.1), rgba(0, 200, 160, 0.02));
+        border: 1px solid rgba(0, 255, 200, 0.2);
+        color: #fff;
+        border-radius: 24px 24px 8px 24px;
+        backdrop-filter: blur(20px);
+    }
+
+    .msg-meta-inline {
+        float: right;
+        font-size: 0.7rem;
+        margin-top: 6px;
+        margin-left: 15px;
+        margin-bottom: -2px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        opacity: 0.5;
+    }
+
+    .mine .msg-meta-inline {
+        color: #00ffc8;
+        opacity: 0.8;
+    }
+
+    .tick {
+        font-size: 0.75rem;
+        letter-spacing: -3px;
+        margin-right: 4px;
+        transition: color 0.3s;
+    }
+
+        .tick.read {
+            color: #00ffc8;
+        }
+
+    .chat-img-attachment {
+        max-width: 100%;
+        border-radius: 16px;
+        margin-top: 4px;
+        border: 1px solid rgba(255,255,255,0.05);
+        max-height: 280px;
+        object-fit: cover;
+    }
+
+    /* ================= ЗОНА ВВОДУ ================= */
+    .input-area {
+        padding: 0 40px 30px 40px;
+        background: transparent;
+    }
+
+    .input-pill {
+        display: flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 40px;
+        padding: 8px 10px 8px 20px;
+        position: relative;
+        backdrop-filter: blur(30px);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        border: none;
+    }
+
+        .input-pill:focus-within {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+    .btn-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: transparent;
+        border: none;
+        color: rgba(255, 255, 255, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+
+        .btn-icon:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+    .btn-send {
+        background: #00ffc8;
+        color: #0f121e;
+        box-shadow: 0 2px 8px rgba(0, 255, 200, 0.15);
+    }
+
+        .btn-send:hover {
+            background: #00e6b4;
+            color: #0f121e;
+            transform: scale(1.03);
+            box-shadow: 0 4px 12px rgba(0, 255, 200, 0.25);
+        }
+
+        .btn-send:active {
+            transform: scale(0.97);
+        }
+
+    .chat-input {
+        flex-grow: 1;
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 1.05rem;
+        padding: 10px 15px;
+        outline: none;
+    }
+
+        .chat-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+    #fileNameDisplay {
+        position: absolute;
+        top: -30px;
+        left: 25px;
+        font-size: 0.8rem;
+        color: #00ffc8;
+        font-weight: 600;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    /* Стан порожнього чату */
+    .empty-state {
+        margin: auto;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        opacity: 0.6;
+    }
+
+    .empty-icon {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.02);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        border: 1px solid rgba(255,255,255,0.05);
+        box-shadow: inset 0 20px 40px rgba(255,255,255,0.02);
+    }
+
+    .empty-text {
+        font-size: 1.2rem;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+    }
+</style>
+
+<div class="chat-layout-wrapper">
+    <div class="app-window">
+        <div class="sidebar">
+            <div class="sidebar-header">Chats</div>
+            <div class="contacts-list" id="contactsContainer">
+                @if (ViewBag.Contacts != null)
+                {
+                    foreach (CabinetController.ContactInfo info in ViewBag.Contacts)
+                    {
+                        var author = info.Author;
+                        var isActive = ViewBag.ReceiverId != null && ViewBag.ReceiverId == author.Id ? "active" : "";
+                        var initial = !string.IsNullOrWhiteSpace(author.FullName) ? author.FullName.Substring(0, 1).ToUpper() : "?";
+                        var displayName = !string.IsNullOrWhiteSpace(author.FullName) ? author.FullName : "Unknown User";
+
+                        var lastMsgText = info.LastMessage?.Content ?? "No messages yet";
+                        var timeStr = info.LastMessage != null ? info.LastMessage.SentAt.ToString("MMM dd") : "";
+
+                        <a asp-action="Messages" asp-route-id="@author.Id" class="contact-item @isActive" id="contact-@author.Id">
+                            <div class="contact-avatar">@initial</div>
+                            <div class="contact-info">
+                                <div class="contact-name-row">
+                                    <span class="contact-name">@displayName</span>
+                                    <span class="contact-time">@timeStr</span>
+                                </div>
+                                <div class="contact-msg-row">
+                                    <span class="contact-msg">@lastMsgText</span>
+                                    @if (info.UnreadCount > 0)
+                                    {
+                                        <span class="unread-badge">@info.UnreadCount</span>
+                                    }
+                                </div>
+                            </div>
+                        </a>
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="chat-area">
+            @if (ViewBag.ReceiverId != null)
+            {
+                <div class="chat-topbar">
+                    @{
+                        var topInitial = !string.IsNullOrEmpty((string)ViewBag.ReceiverName) ? ((string)ViewBag.ReceiverName).Substring(0, 1).ToUpper() : "?";
+                    }
+                    <div class="contact-avatar" style="width: 48px; height: 48px; font-size: 1.2rem;">@topInitial</div>
+                    <div class="chat-topbar-info">
+                        <h3>@ViewBag.ReceiverName</h3>
+                        <span class="chat-status" id="userStatus">last seen recently</span>
+                    </div>
+                </div>
+
+                <div class="msg-list" id="messagesList">
+                    @{
+                        DateTime? lastDate = null;
+                        int myId = ViewBag.CurrentAuthorId != null ? (int)ViewBag.CurrentAuthorId : 0;
+                    }
+
+                    @if (ViewBag.ChatHistory != null)
+                    {
+                        foreach (var msg in ViewBag.ChatHistory)
+                        {
+                            var msgDate = msg.SentAt.Date;
+                            if (lastDate != msgDate)
+                            {
+                                <div class="date-badge">@msgDate.ToString("MMMM dd")</div>
+                                lastDate = msgDate;
+                            }
+
+                            bool isMine = (msg.SenderId == myId);
+                            var wrapperClass = isMine ? "mine" : "others";
+
+                            var ticksHtml = "";
+                            if (isMine)
+                            {
+                                ticksHtml = msg.IsRead ? "<span class='tick read'>✓✓</span>" : "<span class='tick unread'>✓</span>";
+                            }
+
+                            <div class="msg-wrapper @wrapperClass">
+                                @if (!isMine)
+                                {
+                                    <div class="msg-avatar">@topInitial</div>
+                                }
+
+                                <div class="msg-bubble-container">
+                                    <div class="msg-bubble">
+                                        @if (!string.IsNullOrEmpty(msg.AttachmentUrl))
+                                        {
+                                            <img src="@msg.AttachmentUrl" class="chat-img-attachment" />
+                                        }
+                                        @if (!string.IsNullOrEmpty(msg.Content))
+                                        {
+                                            <div class="msg-content">@msg.Content</div>
+                                        }
+                                        <div class="msg-meta-inline">@Html.Raw(ticksHtml) @msg.SentAt.ToString("HH:mm")</div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <div class="input-area">
+                    <div class="input-pill">
+                        <label for="fileInput" class="btn-icon" title="Attach Image">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                        </label>
+                        <input type="file" id="fileInput" style="display: none;" accept="image/*" />
+                        <div id="fileNameDisplay"></div>
+                        <input type="text" id="messageInput" class="chat-input" placeholder="Message @ViewBag.ReceiverName..." autocomplete="off" />
+                        <button id="sendButton" class="btn-icon btn-send">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                        </button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    </div>
+                    <div class="empty-text">Select a conversation</div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @if (ViewBag.ReceiverId != null)
+    {
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const receiverId = parseInt("@ViewBag.ReceiverId");
+                const receiverUserId = "@ViewBag.ReceiverUserId";
+                const currentUserName = "@Html.Raw(ViewBag.CurrentAuthorName)";
+                const currentAuthorId = parseInt("@ViewBag.CurrentAuthorId");
+                const topInitial = "@Html.Raw(!string.IsNullOrEmpty((string)ViewBag.ReceiverName) ? ((string)ViewBag.ReceiverName).Substring(0, 1).ToUpper() : "?")";
+
+                const messageInput = document.getElementById("messageInput");
+                const sendButton = document.getElementById("sendButton");
+                const messagesList = document.getElementById("messagesList");
+                const statusSpan = document.getElementById("userStatus");
+                const fileInput = document.getElementById("fileInput");
+                const fileNameDisplay = document.getElementById("fileNameDisplay");
+
+                if(messagesList) messagesList.scrollTop = messagesList.scrollHeight;
+
+                const connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+
+                connection.on("UserStatusChanged", function(userId, isOnline) {
+                    if(userId === receiverUserId) {
+                        statusSpan.innerText = isOnline ? "online" : "last seen recently";
+                        statusSpan.className = isOnline ? "chat-status online" : "chat-status";
+                    }
+                });
+
+                connection.on("MessagesWereRead", function(readerId) {
+                    if(readerId === receiverId) {
+                        document.querySelectorAll('.tick.unread').forEach(el => {
+                            el.innerHTML = "✓✓";
+                            el.className = "tick read";
+                        });
+                    }
+                });
+
+                connection.on("ReceivePrivateMessage", function (senderId, user, message, time, attachmentUrl) {
+                    if (senderId === receiverId) {
+                        renderBubble(false, message, attachmentUrl, time);
+                        connection.invoke("MarkAsRead", receiverId);
+                    }
+                    moveContactToTop(senderId, message, true);
+                });
+
+                connection.start().then(() => {
+                    if (sendButton) sendButton.disabled = false;
+                    connection.invoke("CheckIfOnline", receiverUserId).then(isOnline => {
+                        statusSpan.innerText = isOnline ? "online" : "last seen recently";
+                        statusSpan.className = isOnline ? "chat-status online" : "chat-status";
+                    });
+                    connection.invoke("MarkAsRead", receiverId);
+                }).catch(err => console.error(err));
+
+                if(fileInput) {
+                    fileInput.addEventListener("change", function() {
+                        fileNameDisplay.innerText = this.files.length > 0 ? "📎 " + this.files[0].name : "";
+                    });
+                }
+
+                function sendMessage() {
+                    const message = messageInput.value.trim();
+                    const file = fileInput.files[0];
+
+                    if (message === "" && !file) return;
+
+                    const originalIcon = sendButton.innerHTML;
+                    sendButton.innerHTML = "⏳";
+                    sendButton.disabled = true;
+
+                    if (file) {
+                        const formData = new FormData(); formData.append("file", file);
+                        fetch('/api/chatupload/upload', { method: 'POST', body: formData })
+                        .then(r => r.json())
+                        .then(data => {
+                            connection.invoke("SendPrivateMessage", receiverId, message, data.url).catch(err => console.error(err));
+                            renderBubble(true, message, data.url, new Date().toLocaleTimeString('en-US', {hour12:false, hour:"numeric", minute:"numeric"}));
+                            reset(originalIcon);
+                        }).catch(e => { console.error(e); reset(originalIcon); });
+                    } else {
+                        connection.invoke("SendPrivateMessage", receiverId, message, null).catch(err => console.error(err));
+                        renderBubble(true, message, null, new Date().toLocaleTimeString('en-US', {hour12:false, hour:"numeric", minute:"numeric"}));
+                        reset(originalIcon);
+                    }
+                }
+
+                function renderBubble(isMine, message, attachmentUrl, time) {
+                    const wrapperClass = isMine ? "mine" : "others";
+                    const ticks = isMine ? "<span class='tick unread'>✓</span>" : "";
+
+                    let html = "";
+                    if (!isMine) {
+                        html += `<div class="msg-avatar">${topInitial}</div>`;
+                    }
+
+                    html += `<div class="msg-bubble-container"><div class="msg-bubble">`;
+                    if (attachmentUrl) html += `<img src="${attachmentUrl}" class="chat-img-attachment" />`;
+                    if (message) html += `<div class="msg-content">${message}</div>`;
+                    html += `<div class="msg-meta-inline">${ticks} ${time}</div></div></div>`;
+
+                    const div = document.createElement("div");
+                    div.className = `msg-wrapper ${wrapperClass}`; div.innerHTML = html;
+                    messagesList.appendChild(div);
+                    messagesList.scrollTop = messagesList.scrollHeight;
+                }
+
+                function reset(icon) {
+                    messageInput.value = ""; fileInput.value = ""; fileNameDisplay.innerText = "";
+                    sendButton.innerHTML = icon; sendButton.disabled = false; messageInput.focus();
+                }
+
+                function moveContactToTop(id, text, isUnread) {
+                    const contactItem = document.getElementById("contact-" + id);
+                    if(contactItem) {
+                        contactItem.querySelector(".contact-msg").innerText = text;
+                        document.getElementById("contactsContainer").prepend(contactItem);
+                    }
+                }
+
+                if(sendButton) {
+                    sendButton.addEventListener("click", e => { sendMessage(); e.preventDefault(); });
+                    messageInput.addEventListener("keypress", e => { if (e.key === "Enter") { sendMessage(); e.preventDefault(); } });
+                }
+            });
+        </script>
+    }
+}

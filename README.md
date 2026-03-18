@@ -1,6 +1,10 @@
 <div align="center">
 
-  <h1>iJournal &mdash; Collaborative Publishing Platform</h1>
+  <h1 align="center">
+  iJournal <br>
+  Collaborative Publishing Platform
+</h1>
+  
   <p>
     <strong>Master's Degree Program | Data Engineering</strong><br>
     Lviv Polytechnic National University
@@ -50,7 +54,7 @@ The syllabus directly reflects the Master's degree curriculum requirements for t
 | **Lab 1** | **Розробка web-додатку ASP.Net Core MVC** | EF Core Code-First, CRUD Operations, Controllers & Views, Relational Data Schema mapping. | ✅ Completed |
 | **Lab 2** | **Використання сесій для тимчасового зберігання даних** | Temporary session storage for edited data, Model-level validation attributes, Clearing sessions. | ✅ Completed |
 | **Lab 3** | **Авторизація та автентифікація на основі Identity** | ASP.NET Core Identity, Individual accounts, Role-based Access Control (Admin), Admin Panel for user management. | ✅ Completed |
-| **Lab 4** | **Використання SignalR Core для створення чатів** | Real-time messaging, SignalR Hubs, Private and Public messages, File/Image transfer. | ⏳ Planned |
+| **Lab 4** | **Використання SignalR Core для створення чатів** | Real-time messaging, SignalR Hubs, Private and Public messages, File/Image transfer. | ✅ Completed |
 | **Lab 5** | **Побудова REST-сервісу з використанням Web API** | ASP.NET Core Web API, Repository Pattern, API Controllers, Swagger UI testing. | ⏳ Planned |
 | **Lab 6** | **Розробка мікросервісів** | Microservices Architecture, Service separation for models. | ⏳ Planned |
 
@@ -110,7 +114,7 @@ Follow these steps to set up the project locally.
 
 1.  **Clone the repository**
     ```bash
-    git clone [https://github.com/Karoshi-man/server-web.git](https://github.com/Karoshi-man/server-web.git)
+    git clone https://github.com/Karoshi-man/server-web.git
     cd server-web
     ```
 
@@ -136,10 +140,10 @@ Follow these steps to set up the project locally.
 
 **Martin Fesenko (Karoshi-man)**
 * Github: [@Karoshi-man](https://github.com/Karoshi-man)
-* Role: Master's Student, Data Engineering (Future ML Engineer)
+* Role: Master's Student, Data Engineering
 
 ---
 
 <div align="center">
-  <small>&copy; 2026 iJournal Project. Designed in Lviv.</small>
+  <small>&copy; 2026 iJournal Project. Designed in Lviv</small>
 </div>

@@ -7,8 +7,12 @@ using Microsoft.AspNetCore.Localization;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<lab1.Repositories.IAuthorRepository, lab1.Repositories.AuthorRepository>();
+builder.Services.AddScoped<lab1.Repositories.IArticleRepository, lab1.Repositories.ArticleRepository>();
 builder.Services.AddSignalR();
 builder.Services.AddRazorPages();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<JournalContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -41,6 +45,15 @@ builder.Services.AddSession(options =>
 });
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "iJournal API v1");
+    });
+}
 
 var supportedCultures = new[] { new CultureInfo("en-US") };
 app.UseRequestLocalization(new RequestLocalizationOptions

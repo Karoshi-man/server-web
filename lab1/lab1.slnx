@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="../Articles.Microservice/Articles.Microservice.csproj" Id="04a3eb75-258e-40dc-93c3-fda437e2da4f" />
+  <Project Path="../Authors.Microservice/Authors.Microservice.csproj" Id="41b27b0c-efa4-4c2f-bef5-0dd749241d92" />
   <Project Path="lab1.csproj" />
 </Solution>

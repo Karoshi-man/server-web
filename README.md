@@ -11,8 +11,8 @@
   </p>
 
   <p>
-    <a href="https://learn.microsoft.com/en-us/aspnet/core/?view=aspnetcore-8.0">
-      <img src="https://img.shields.io/badge/.NET_8.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET" />
+    <a href="https://learn.microsoft.com/en-us/aspnet/core/?view=aspnetcore-10.0">
+      <img src="https://img.shields.io/badge/.NET_10.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET" />
     </a>
     <a href="https://learn.microsoft.com/en-us/ef/core/">
       <img src="https://img.shields.io/badge/Entity_Framework-388E3C?style=for-the-badge&logo=databricks&logoColor=white" alt="EF Core" />
@@ -55,8 +55,8 @@ The syllabus directly reflects the Master's degree curriculum requirements for t
 | **Lab 2** | **Використання сесій для тимчасового зберігання даних** | Temporary session storage for edited data, Model-level validation attributes, Clearing sessions. | ✅ Completed |
 | **Lab 3** | **Авторизація та автентифікація на основі Identity** | ASP.NET Core Identity, Individual accounts, Role-based Access Control (Admin), Admin Panel for user management. | ✅ Completed |
 | **Lab 4** | **Використання SignalR Core для створення чатів** | Real-time messaging, SignalR Hubs, Private and Public messages, File/Image transfer. | ✅ Completed |
-| **Lab 5** | **Побудова REST-сервісу з використанням Web API** | ASP.NET Core Web API, Repository Pattern, API Controllers, Swagger UI testing. | ⏳ Planned |
-| **Lab 6** | **Розробка мікросервісів** | Microservices Architecture, Service separation for models. | ⏳ Planned |
+| **Lab 5** | **Побудова REST-сервісу з використанням Web API** | ASP.NET Core Web API, Repository Pattern, API Controllers, Swagger UI testing. | ✅ Completed |
+| **Lab 6** | **Розробка мікросервісів** | Microservices Architecture, Service separation for models. | ✅ Completed |
 
 ---
 
@@ -107,7 +107,7 @@ The UI was designed to feel like a high-end desktop application or a developer-f
 Follow these steps to set up the project locally.
 
 ### Prerequisites
-* [.NET 8.0 SDK](https://dotnet.microsoft.com/download)
+* [.NET 10.0 SDK](https://dotnet.microsoft.com/download)
 * [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (or LocalDB included with Visual Studio)
 
 ### Installation
@@ -138,7 +138,7 @@ Follow these steps to set up the project locally.
 
 ## 👤 Author
 
-**Martin Fesenko (Karoshi-man)**
+**Martin Fesenko**
 * Github: [@Karoshi-man](https://github.com/Karoshi-man)
 * Role: Master's Student, Data Engineering
 
